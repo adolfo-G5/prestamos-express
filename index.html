@@ -499,6 +499,14 @@
         .status-required {
             background-color: #dc3545;
         }
+        
+        .sending-indicator {
+            display: none;
+            text-align: center;
+            padding: 15px;
+            color: #007bff;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -777,6 +785,11 @@
                     <input type="hidden" name="_captcha" value="false">
                     <input type="hidden" name="_next" value="">
                     <input type="hidden" name="_language" value="es">
+                    
+                    <!-- Indicador de envío -->
+                    <div id="sendingIndicator" class="sending-indicator">
+                        Enviando solicitud... Por favor no cierre la página.
+                    </div>
 
                     <button type="submit" class="button-primary" id="submitLoan" disabled>Solicitar Préstamo</button>
                 </form>
@@ -910,6 +923,7 @@
     const closeModalButton = document.getElementById('closeModalButton');
     const acceptTermsBtn = document.getElementById('acceptTerms');
     const termsContent = document.getElementById('termsContent');
+    const sendingIndicator = document.getElementById('sendingIndicator');
 
     // Inicializar la barra de progreso
     progressBar.style.width = '0%';
@@ -1232,7 +1246,10 @@
             return;
         }
         
-        showConfirmationModal();
+        // Mostrar indicador de envío
+        sendingIndicator.style.display = 'block';
+        submitLoanBtn.disabled = true;
+        submitLoanBtn.textContent = 'Enviando...';
         
         try {
             const form = e.target;
@@ -1262,6 +1279,9 @@
             });
             
             if (response.ok) {
+                // Mostrar modal de confirmación
+                showConfirmationModal();
+                
                 // Limpiar formulario después del envío exitoso
                 form.reset();
                 document.getElementById('formStep1').reset();
@@ -1293,6 +1313,11 @@
         } catch (error) {
             console.error('Error al enviar el formulario:', error);
             alert('Hubo un error al enviar tu solicitud. Por favor intenta nuevamente.');
+        } finally {
+            // Ocultar indicador de envío y restaurar botón
+            sendingIndicator.style.display = 'none';
+            submitLoanBtn.disabled = false;
+            submitLoanBtn.textContent = 'Solicitar Préstamo';
         }
     });
 
