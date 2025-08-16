@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Préstamos Express - Tu solución rápida y segura</title>
+    <title>Préstamos Express - Solución iOS</title>
     <style>
         /* Estilos generales */
         body {
@@ -412,7 +412,7 @@
             <!-- Paso 1: Datos básicos del usuario -->
             <div id="step1">
                 <h3>Paso 1: Datos básicos</h3>
-                <form id="formStep1">
+                <form id="formStep1" enctype="multipart/form-data">
                     <div class="form-group">
                         <label for="phone">Número de celular:</label>
                         <div style="display: flex;">
@@ -443,7 +443,7 @@
                     <div class="form-group">
                         <label for="cedulaFront">Foto frontal de la cédula:</label>
                         <div class="file-upload-container" id="cedulaFrontUpload">
-                            <input type="file" id="cedulaFront" name="cedula_frontal" accept="image/*" required>
+                            <input type="file" id="cedulaFront" name="cedula_frontal" accept="image/*" capture="environment" required>
                             <p>Toca para subir o tomar foto del frente de la cédula</p>
                             <img id="cedulaFrontPreview" src="#" alt="Previsualización de cédula frontal">
                         </div>
@@ -452,7 +452,7 @@
                     <div class="form-group">
                         <label for="cedulaBack">Foto trasera de la cédula:</label>
                         <div class="file-upload-container" id="cedulaBackUpload">
-                            <input type="file" id="cedulaBack" name="cedula_trasera" accept="image/*" required>
+                            <input type="file" id="cedulaBack" name="cedula_trasera" accept="image/*" capture="environment" required>
                             <p>Toca para subir o tomar foto del reverso de la cédula</p>
                             <img id="cedulaBackPreview" src="#" alt="Previsualización de cédula trasera">
                         </div>
@@ -534,7 +534,7 @@
                     <div class="form-group" id="invoicePhotoGroup" style="display: none;">
                         <label for="invoicePhoto">Foto de la factura de compra:</label>
                         <div class="file-upload-container" id="invoicePhotoUpload">
-                            <input type="file" id="invoicePhoto" name="foto_factura" accept="image/*">
+                            <input type="file" id="invoicePhoto" name="foto_factura" accept="image/*" capture="environment">
                             <p>Toca para subir o tomar foto de la factura</p>
                             <img id="invoicePhotoPreview" src="#" alt="Previsualización de factura">
                         </div>
@@ -545,7 +545,7 @@
                     <div class="form-group">
                         <label for="assetPhoto1">Foto 1 del bien en garantía:</label>
                         <div class="file-upload-container" id="assetPhoto1Upload">
-                            <input type="file" id="assetPhoto1" name="foto_bien_1" accept="image/*" required>
+                            <input type="file" id="assetPhoto1" name="foto_bien_1" accept="image/*" capture="environment" required>
                             <p>Toca para subir o tomar foto del bien</p>
                             <img id="assetPhoto1Preview" src="#" alt="Previsualización de foto del bien 1">
                         </div>
@@ -555,7 +555,7 @@
                     <div class="form-group">
                         <label for="assetPhoto2">Foto 2 del bien en garantía:</label>
                         <div class="file-upload-container" id="assetPhoto2Upload">
-                            <input type="file" id="assetPhoto2" name="foto_bien_2" accept="image/*">
+                            <input type="file" id="assetPhoto2" name="foto_bien_2" accept="image/*" capture="environment">
                             <p>Toca para subir o tomar foto del bien</p>
                             <img id="assetPhoto2Preview" src="#" alt="Previsualización de foto del bien 2">
                         </div>
@@ -564,7 +564,7 @@
                     <div class="form-group">
                         <label for="assetPhoto3">Foto 3 del bien en garantía:</label>
                         <div class="file-upload-container" id="assetPhoto3Upload">
-                            <input type="file" id="assetPhoto3" name="foto_bien_3" accept="image/*">
+                            <input type="file" id="assetPhoto3" name="foto_bien_3" accept="image/*" capture="environment">
                             <p>Toca para subir o tomar foto del bien</p>
                             <img id="assetPhoto3Preview" src="#" alt="Previsualización de foto del bien 3">
                         </div>
@@ -573,7 +573,7 @@
                     <div class="form-group">
                         <label for="assetPhoto4">Foto 4 del bien en garantía:</label>
                         <div class="file-upload-container" id="assetPhoto4Upload">
-                            <input type="file" id="assetPhoto4" name="foto_bien_4" accept="image/*">
+                            <input type="file" id="assetPhoto4" name="foto_bien_4" accept="image/*" capture="environment">
                             <p>Toca para subir o tomar foto del bien</p>
                             <img id="assetPhoto4Preview" src="#" alt="Previsualización de foto del bien 4">
                         </div>
@@ -582,7 +582,7 @@
                     <div class="form-group">
                         <label for="assetPhoto5">Foto 5 del bien en garantía:</label>
                         <div class="file-upload-container" id="assetPhoto5Upload">
-                            <input type="file" id="assetPhoto5" name="foto_bien_5" accept="image/*">
+                            <input type="file" id="assetPhoto5" name="foto_bien_5" accept="image/*" capture="environment">
                             <p>Toca para subir o tomar foto del bien</p>
                             <img id="assetPhoto5Preview" src="#" alt="Previsualización de foto del bien 5">
                         </div>
@@ -828,22 +828,25 @@
     }
 
     function validateStep1() {
-        const isPhoneValid = validatePhone(phoneInput.value);
-        const isEmailValid = validateEmail(emailInput.value);
-        const isFullNameValid = fullNameInput.value.trim() !== '';
-        const isCedulaValid = validateCedula(cedulaInput.value);
-        const isCedulaFrontUploaded = cedulaFrontInput.files && cedulaFrontInput.files.length > 0;
-        const isCedulaBackUploaded = cedulaBackInput.files && cedulaBackInput.files.length > 0;
+        // SOLUCIÓN iOS: Usar timeout para permitir que Safari procese los archivos
+        setTimeout(() => {
+            const isPhoneValid = validatePhone(phoneInput.value);
+            const isEmailValid = validateEmail(emailInput.value);
+            const isFullNameValid = fullNameInput.value.trim() !== '';
+            const isCedulaValid = validateCedula(cedulaInput.value);
+            const isCedulaFrontUploaded = cedulaFrontInput.files && cedulaFrontInput.files.length > 0;
+            const isCedulaBackUploaded = cedulaBackInput.files && cedulaBackInput.files.length > 0;
 
-        toggleError(phoneError, !isPhoneValid);
-        toggleError(emailError, !isEmailValid);
-        toggleError(fullNameError, !isFullNameValid);
-        toggleError(cedulaError, !isCedulaValid);
-        toggleError(cedulaFrontError, !isCedulaFrontUploaded);
-        toggleError(cedulaBackError, !isCedulaBackUploaded);
+            toggleError(phoneError, !isPhoneValid);
+            toggleError(emailError, !isEmailValid);
+            toggleError(fullNameError, !isFullNameValid);
+            toggleError(cedulaError, !isCedulaValid);
+            toggleError(cedulaFrontError, !isCedulaFrontUploaded);
+            toggleError(cedulaBackError, !isCedulaBackUploaded);
 
-        continueToStep2Btn.disabled = !(isPhoneValid && isEmailValid && isFullNameValid && 
-                                     isCedulaValid && isCedulaFrontUploaded && isCedulaBackUploaded);
+            continueToStep2Btn.disabled = !(isPhoneValid && isEmailValid && isFullNameValid && 
+                                         isCedulaValid && isCedulaFrontUploaded && isCedulaBackUploaded);
+        }, 300);
     }
 
     function validateStep2() {
@@ -954,10 +957,11 @@
 
         adminEmailLink.href = 'mailto:' + config.emailAdministrador;
         adminEmailLink.textContent = config.emailAdministrador;
-       adminWhatsappLink.href = 'https://wa.me/' + config.whatsappAdministrador.replace('+', '');
+        adminWhatsappLink.href = 'https://wa.me/' + config.whatsappAdministrador.replace('+', '');
         adminWhatsappLink.textContent = config.whatsappAdministrador;
     }
-        function updateLoanSummary() {
+    
+    function updateLoanSummary() {
         const amount = parseFloat(loanAmountInput.value);
         const selectedTermDays = parseInt(loanTermSelect.value);
 
@@ -1004,6 +1008,7 @@
         }
     });
 
+    // SOLUCIÓN iOS: Workaround para inputs de archivo
     cedulaFrontInput.addEventListener('change', function() {
         if (this.files && this.files[0]) {
             const reader = new FileReader();
@@ -1011,6 +1016,11 @@
                 cedulaFrontPreview.src = e.target.result;
                 cedulaFrontPreview.style.display = 'block';
                 cedulaFrontError.style.display = 'none';
+                
+                // Forzar cambio en el input para iOS
+                const temp = cedulaFrontInput.value;
+                cedulaFrontInput.value = '';
+                cedulaFrontInput.value = temp;
             };
             reader.readAsDataURL(this.files[0]);
             validateStep1();
@@ -1024,10 +1034,26 @@
                 cedulaBackPreview.src = e.target.result;
                 cedulaBackPreview.style.display = 'block';
                 cedulaBackError.style.display = 'none';
+                
+                // Forzar cambio en el input para iOS
+                const temp = cedulaBackInput.value;
+                cedulaBackInput.value = '';
+                cedulaBackInput.value = temp;
             };
             reader.readAsDataURL(this.files[0]);
             validateStep1();
         }
+    });
+
+    // Eventos input para iOS
+    cedulaFrontInput.addEventListener('input', function() {
+        validateStep1();
+        setTimeout(validateStep1, 500);
+    });
+
+    cedulaBackInput.addEventListener('input', function() {
+        validateStep1();
+        setTimeout(validateStep1, 500);
     });
 
     // Event Listeners para fotos del bien
@@ -1052,6 +1078,11 @@
                 reader.onload = function(e) {
                     previews[index].src = e.target.result;
                     previews[index].style.display = 'block';
+                    
+                    // Forzar cambio en el input para iOS
+                    const temp = input.value;
+                    input.value = '';
+                    input.value = temp;
                 };
                 reader.readAsDataURL(this.files[0]);
             } else {
@@ -1059,23 +1090,39 @@
             }
             validateStep2();
         });
+        
+        // Evento input para iOS
+        input.addEventListener('input', function() {
+            validateStep2();
+            setTimeout(validateStep2, 500);
+        });
     });
 
     // Event Listeners para fotos de factura
     document.getElementById('invoicePhotoUpload').addEventListener('click', () => invoicePhotoInput.click());
     
-    invoicePhotoInput.addEventListener('change', () => {
-        if (invoicePhotoInput.files && invoicePhotoInput.files[0]) {
+    invoicePhotoInput.addEventListener('change', function() {
+        if (this.files && this.files[0]) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 invoicePhotoPreview.src = e.target.result;
                 invoicePhotoPreview.style.display = 'block';
+                
+                // Forzar cambio en el input para iOS
+                const temp = invoicePhotoInput.value;
+                invoicePhotoInput.value = '';
+                invoicePhotoInput.value = temp;
             };
-            reader.readAsDataURL(invoicePhotoInput.files[0]);
+            reader.readAsDataURL(this.files[0]);
         } else {
             invoicePhotoPreview.style.display = 'none';
         }
         validateStep2();
+    });
+    
+    invoicePhotoInput.addEventListener('input', function() {
+        validateStep2();
+        setTimeout(validateStep2, 500);
     });
 
     // Resto de event listeners
@@ -1152,7 +1199,8 @@
         updateLoanSummary();
         validateStep2();
     });
-        document.getElementById('formStep2').addEventListener('submit', async (e) => {
+    
+    document.getElementById('formStep2').addEventListener('submit', async (e) => {
         e.preventDefault();
         validateStep2();
         
