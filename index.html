@@ -469,6 +469,13 @@
                 font-size: 0.9rem;
             }
         }
+        
+        .name-example {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 4px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
@@ -519,8 +526,9 @@
                     
                     <div class="form-group">
                         <label for="fullName">Nombres y apellidos completos:</label>
-                        <input type="text" id="fullName" name="fullName" placeholder="Juan Pérez García" required>
-                        <span class="error-message" id="fullNameError">Nombres y apellidos son obligatorios.</span>
+                        <input type="text" id="fullName" name="fullName" placeholder="Juan Carlos Pérez García" required>
+                        <span class="error-message" id="fullNameError">Debe ingresar primer nombre, segundo nombre, primer apellido y segundo apellido.</span>
+                        <div class="name-example">Ejemplo: Juan Carlos Pérez García</div>
                     </div>
                     
                     <div class="form-group">
@@ -673,8 +681,9 @@
                         <h4>Familiar de referencia #1</h4>
                         <div class="form-group">
                             <label for="relative1Name">Nombre completo:</label>
-                            <input type="text" id="relative1Name" name="familiar1_nombre" required>
-                            <span class="error-message" id="relative1NameError">Debe ingresar nombre completo (mínimo 3 palabras)</span>
+                            <input type="text" id="relative1Name" name="familiar1_nombre" placeholder="María Luisa Rodríguez López" required>
+                            <span class="error-message" id="relative1NameError">Debe ingresar primer nombre, segundo nombre, primer apellido y segundo apellido.</span>
+                            <div class="name-example">Ejemplo: María Luisa Rodríguez López</div>
                         </div>
                         <div class="form-group">
                             <label for="relative1Address">Dirección donde vive:</label>
@@ -701,8 +710,9 @@
                         <h4>Familiar de referencia #2</h4>
                         <div class="form-group">
                             <label for="relative2Name">Nombre completo:</label>
-                            <input type="text" id="relative2Name" name="familiar2_nombre" required>
-                            <span class="error-message" id="relative2NameError">Debe ingresar nombre completo (mínimo 3 palabras)</span>
+                            <input type="text" id="relative2Name" name="familiar2_nombre" placeholder="Carlos Alberto Martínez Sánchez" required>
+                            <span class="error-message" id="relative2NameError">Debe ingresar primer nombre, segundo nombre, primer apellido y segundo apellido.</span>
+                            <div class="name-example">Ejemplo: Carlos Alberto Martínez Sánchez</div>
                         </div>
                         <div class="form-group">
                             <label for="relative2Address">Dirección donde vive:</label>
@@ -856,6 +866,7 @@
     const hasInvoiceError = document.getElementById('hasInvoiceError');
     const invoicePhotoError = document.getElementById('invoicePhotoError');
     const relative1NameError = document.getElementById('relative1NameError');
+    const relative2NameError = document.getElementById('relative2NameError');
     const summaryAmount = document.getElementById('summaryAmount');
     const summaryInterestRate = document.getElementById('summaryInterestRate');
     const summaryInterest = document.getElementById('summaryInterest');
@@ -896,6 +907,11 @@
         return /^\d{1,2}-\d{3,4}-\d{2,4}$/.test(cedula);
     }
 
+    function validateFullName(name) {
+        // Validar que tenga al menos 4 palabras (primer nombre, segundo nombre, primer apellido, segundo apellido)
+        return name.trim().split(/\s+/).length >= 4;
+    }
+
     function toggleError(element, show) {
         element.style.display = show ? 'block' : 'none';
     }
@@ -903,7 +919,7 @@
     function validateStep1() {
         const isPhoneValid = validatePhone(phoneInput.value);
         const isEmailValid = validateEmail(emailInput.value);
-        const isFullNameValid = fullNameInput.value.trim() !== '';
+        const isFullNameValid = validateFullName(fullNameInput.value);
         const isCedulaValid = validateCedula(cedulaInput.value);
         const isCedulaFrontUploaded = uploadedFiles.cedulaFront !== null;
         const isCedulaBackUploaded = uploadedFiles.cedulaBack !== null;
@@ -929,8 +945,8 @@
         const isAssetPhotosValid = uploadedFiles.assetPhotos.length > 0;
 
         // Validar campos de familiares
-        const isRelative1NameValid = relative1Name.value.trim().split(/\s+/).length >= 3;
-        const isRelative2NameValid = relative2Name.value.trim().split(/\s+/).length >= 3;
+        const isRelative1NameValid = validateFullName(relative1Name.value);
+        const isRelative2NameValid = validateFullName(relative2Name.value);
 
         toggleError(assetValueError, !isAssetValueValid);
         toggleError(assetConditionError, !isAssetConditionValid);
@@ -938,7 +954,7 @@
         toggleError(invoicePhotoError, hasInvoiceRadios[0].checked && !isInvoicePhotoValid);
         toggleError(assetPhoto1Error, !isAssetPhotosValid);
         toggleError(relative1NameError, !isRelative1NameValid);
-        toggleError(relative1NameError, !isRelative2NameValid);
+        toggleError(relative2NameError, !isRelative2NameValid);
 
         submitLoanBtn.disabled = !(isAssetValueValid && isAssetConditionValid && isHasInvoiceSelected && 
                                  isInvoicePhotoValid && isAssetPhotosValid && isRelative1NameValid && isRelative2NameValid);
