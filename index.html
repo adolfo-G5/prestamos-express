@@ -499,10 +499,6 @@
         .status-required {
             background-color: #dc3545;
         }
-        
-        .status-optional {
-            background-color: #6c757d;
-        }
     </style>
 </head>
 <body>
@@ -624,7 +620,7 @@
                     <div class="form-group">
                         <label for="assetValue">Valor del bien en garantía ($):</label>
                         <input type="number" id="assetValue" name="valor_bien_garantia" min="0" step="0.01" required>
-                        <span class="error-message" id="assetValueError">El valor del bien no puede ser menor al mínimo de garantía.</span>
+                        <span class="error-message" id="assetValueError">El valor del bien no puede ser menor al mínimo de garantía ($<span id="minGuaranteeValue">0.00</span>)</span>
                     </div>
                     
                     <div class="form-group">
@@ -656,7 +652,7 @@
                         <span class="error-message" id="invoicePhotoError">Debes subir una foto de la factura.</span>
                     </div>
                     
-                    <!-- Campos para subir fotos del bien en garantía -->
+                    <!-- Campos para subir fotos del bien en garantía (todas obligatorias) -->
                     <div class="form-group">
                         <label for="assetPhoto1">Foto 1 del bien en garantía:</label>
                         <div class="file-upload-container" id="assetPhoto1Upload">
@@ -664,63 +660,47 @@
                             <p>Haz clic para subir o tomar foto del bien</p>
                             <img id="assetPhoto1Preview" src="#" alt="Previsualización de foto del bien 1">
                         </div>
-                        <span class="error-message" id="assetPhoto1Error">Debes subir al menos una foto del bien.</span>
-                        <div class="upload-status">
-                            <span class="status-indicator status-required" id="assetPhoto1Status"></span>
-                            <span id="assetPhoto1StatusText">Foto requerida</span>
-                        </div>
+                        <span class="error-message" id="assetPhoto1Error">Debes subir esta foto del bien.</span>
                     </div>
                     
                     <div class="form-group">
                         <label for="assetPhoto2">Foto 2 del bien en garantía:</label>
                         <div class="file-upload-container" id="assetPhoto2Upload">
-                            <input type="file" id="assetPhoto2" name="foto_bien_2" accept="image/*" capture="environment">
+                            <input type="file" id="assetPhoto2" name="foto_bien_2" accept="image/*" capture="environment" required>
                             <p>Haz clic para subir o tomar foto del bien</p>
                             <img id="assetPhoto2Preview" src="#" alt="Previsualización de foto del bien 2">
                         </div>
-                        <div class="upload-status">
-                            <span class="status-indicator status-optional" id="assetPhoto2Status"></span>
-                            <span id="assetPhoto2StatusText">Opcional</span>
-                        </div>
+                        <span class="error-message" id="assetPhoto2Error">Debes subir esta foto del bien.</span>
                     </div>
                     
                     <div class="form-group">
                         <label for="assetPhoto3">Foto 3 del bien en garantía:</label>
                         <div class="file-upload-container" id="assetPhoto3Upload">
-                            <input type="file" id="assetPhoto3" name="foto_bien_3" accept="image/*" capture="environment">
+                            <input type="file" id="assetPhoto3" name="foto_bien_3" accept="image/*" capture="environment" required>
                             <p>Haz clic para subir o tomar foto del bien</p>
                             <img id="assetPhoto3Preview" src="#" alt="Previsualización de foto del bien 3">
                         </div>
-                        <div class="upload-status">
-                            <span class="status-indicator status-optional" id="assetPhoto3Status"></span>
-                            <span id="assetPhoto3StatusText">Opcional</span>
-                        </div>
+                        <span class="error-message" id="assetPhoto3Error">Debes subir esta foto del bien.</span>
                     </div>
                     
                     <div class="form-group">
                         <label for="assetPhoto4">Foto 4 del bien en garantía:</label>
                         <div class="file-upload-container" id="assetPhoto4Upload">
-                            <input type="file" id="assetPhoto4" name="foto_bien_4" accept="image/*" capture="environment">
+                            <input type="file" id="assetPhoto4" name="foto_bien_4" accept="image/*" capture="environment" required>
                             <p>Haz clic para subir o tomar foto del bien</p>
                             <img id="assetPhoto4Preview" src="#" alt="Previsualización de foto del bien 4">
                         </div>
-                        <div class="upload-status">
-                            <span class="status-indicator status-optional" id="assetPhoto4Status"></span>
-                            <span id="assetPhoto4StatusText">Opcional</span>
-                        </div>
+                        <span class="error-message" id="assetPhoto4Error">Debes subir esta foto del bien.</span>
                     </div>
                     
                     <div class="form-group">
                         <label for="assetPhoto5">Foto 5 del bien en garantía:</label>
                         <div class="file-upload-container" id="assetPhoto5Upload">
-                            <input type="file" id="assetPhoto5" name="foto_bien_5" accept="image/*" capture="environment">
+                            <input type="file" id="assetPhoto5" name="foto_bien_5" accept="image/*" capture="environment" required>
                             <p>Haz clic para subir o tomar foto del bien</p>
                             <img id="assetPhoto5Preview" src="#" alt="Previsualización de foto del bien 5">
                         </div>
-                        <div class="upload-status">
-                            <span class="status-indicator status-optional" id="assetPhoto5Status"></span>
-                            <span id="assetPhoto5StatusText">Opcional</span>
-                        </div>
+                        <span class="error-message" id="assetPhoto5Error">Debes subir esta foto del bien.</span>
                     </div>
 
                     <!-- Bloque para familiares de referencia -->
@@ -876,6 +856,7 @@
     const availableTermsDisplay = document.getElementById('availableTermsDisplay');
     const paymentMethodsDisplay = document.getElementById('paymentMethodsDisplay');
     const minGuaranteeDisplay = document.getElementById('minGuaranteeDisplay');
+    const minGuaranteeValue = document.getElementById('minGuaranteeValue');
     const loanAmountInput = document.getElementById('loanAmount');
     const selectedLoanAmountDisplay = document.getElementById('selectedLoanAmount');
     const loanTermSelect = document.getElementById('loanTerm');
@@ -898,16 +879,10 @@
     const assetPhoto4Preview = document.getElementById('assetPhoto4Preview');
     const assetPhoto5Preview = document.getElementById('assetPhoto5Preview');
     const assetPhoto1Error = document.getElementById('assetPhoto1Error');
-    const assetPhoto1Status = document.getElementById('assetPhoto1Status');
-    const assetPhoto1StatusText = document.getElementById('assetPhoto1StatusText');
-    const assetPhoto2Status = document.getElementById('assetPhoto2Status');
-    const assetPhoto2StatusText = document.getElementById('assetPhoto2StatusText');
-    const assetPhoto3Status = document.getElementById('assetPhoto3Status');
-    const assetPhoto3StatusText = document.getElementById('assetPhoto3StatusText');
-    const assetPhoto4Status = document.getElementById('assetPhoto4Status');
-    const assetPhoto4StatusText = document.getElementById('assetPhoto4StatusText');
-    const assetPhoto5Status = document.getElementById('assetPhoto5Status');
-    const assetPhoto5StatusText = document.getElementById('assetPhoto5StatusText');
+    const assetPhoto2Error = document.getElementById('assetPhoto2Error');
+    const assetPhoto3Error = document.getElementById('assetPhoto3Error');
+    const assetPhoto4Error = document.getElementById('assetPhoto4Error');
+    const assetPhoto5Error = document.getElementById('assetPhoto5Error');
     const relative1Name = document.getElementById('relative1Name');
     const relative1Address = document.getElementById('relative1Address');
     const relative1Phone = document.getElementById('relative1Phone');
@@ -997,8 +972,8 @@
         const isHasInvoiceSelected = document.querySelector('input[name="tiene_factura"]:checked') !== null;
         const isInvoicePhotoValid = hasInvoiceRadios[0].checked ? uploadedFiles.invoicePhoto !== null : true;
         
-        // Validar que al menos una foto de bien esté subida
-        const isAssetPhotosValid = uploadedFiles.assetPhotos.some(photo => photo !== null);
+        // Validar que todas las fotos de bien estén subidas
+        const isAssetPhotosValid = uploadedFiles.assetPhotos.every(photo => photo !== null);
 
         // Validar campos de familiares
         const isRelative1NameValid = validateFullName(relative1Name.value);
@@ -1008,7 +983,11 @@
         toggleError(assetConditionError, !isAssetConditionValid);
         toggleError(hasInvoiceError, !isHasInvoiceSelected);
         toggleError(invoicePhotoError, hasInvoiceRadios[0].checked && !isInvoicePhotoValid);
-        toggleError(assetPhoto1Error, !isAssetPhotosValid);
+        toggleError(assetPhoto1Error, !uploadedFiles.assetPhotos[0]);
+        toggleError(assetPhoto2Error, !uploadedFiles.assetPhotos[1]);
+        toggleError(assetPhoto3Error, !uploadedFiles.assetPhotos[2]);
+        toggleError(assetPhoto4Error, !uploadedFiles.assetPhotos[3]);
+        toggleError(assetPhoto5Error, !uploadedFiles.assetPhotos[4]);
         toggleError(relative1NameError, !isRelative1NameValid);
         toggleError(relative2NameError, !isRelative2NameValid);
 
@@ -1028,6 +1007,7 @@
         
         const initialMinGuarantee = calcularMinimoGarantia(parseFloat(loanAmountInput.value));
         minGuaranteeDisplay.textContent = initialMinGuarantee.toFixed(2);
+        minGuaranteeValue.textContent = initialMinGuarantee.toFixed(2);
         assetValueInput.min = initialMinGuarantee;
 
         // Cargar plazos disponibles
@@ -1092,6 +1072,7 @@
         
         const minGuarantee = calcularMinimoGarantia(amount);
         minGuaranteeDisplay.textContent = minGuarantee.toFixed(2);
+        minGuaranteeValue.textContent = minGuarantee.toFixed(2);
         assetValueInput.min = minGuarantee;
     }
 
@@ -1117,7 +1098,6 @@
                     uploadedFiles.invoicePhoto = file;
                 } else if (fileType === 'asset' && index !== null) {
                     uploadedFiles.assetPhotos[index] = file;
-                    updateAssetPhotoStatus(index, true);
                 }
                 
                 // Validar paso correspondiente
@@ -1126,6 +1106,11 @@
                 } else {
                     validateStep2();
                 }
+                
+                // Workaround para iOS: forzar actualización del input
+                const temp = input.value;
+                input.value = '';
+                input.value = temp;
             };
             reader.readAsDataURL(file);
         } else {
@@ -1142,7 +1127,6 @@
                 uploadedFiles.invoicePhoto = null;
             } else if (fileType === 'asset' && index !== null) {
                 uploadedFiles.assetPhotos[index] = null;
-                updateAssetPhotoStatus(index, false);
             }
             
             // Validar el paso correspondiente
@@ -1150,27 +1134,6 @@
                 validateStep1();
             } else {
                 validateStep2();
-            }
-        }
-    }
-
-    // Actualizar estado visual de la foto
-    function updateAssetPhotoStatus(index, isUploaded) {
-        const statusIndicator = document.getElementById(`assetPhoto${index+1}Status`);
-        const statusText = document.getElementById(`assetPhoto${index+1}StatusText`);
-        
-        if (statusIndicator && statusText) {
-            if (isUploaded) {
-                statusIndicator.className = 'status-indicator status-uploaded';
-                statusText.textContent = 'Foto subida correctamente';
-            } else {
-                if (index === 0) {
-                    statusIndicator.className = 'status-indicator status-required';
-                    statusText.textContent = 'Foto requerida';
-                } else {
-                    statusIndicator.className = 'status-indicator status-optional';
-                    statusText.textContent = 'Opcional';
-                }
             }
         }
     }
@@ -1187,10 +1150,11 @@
     // Event Listeners para fotos del bien
     const assetPhotoInputs = [assetPhoto1Input, assetPhoto2Input, assetPhoto3Input, assetPhoto4Input, assetPhoto5Input];
     const assetPhotoPreviews = [assetPhoto1Preview, assetPhoto2Preview, assetPhoto3Preview, assetPhoto4Preview, assetPhoto5Preview];
+    const assetPhotoErrors = [assetPhoto1Error, assetPhoto2Error, assetPhoto3Error, assetPhoto4Error, assetPhoto5Error];
     
     assetPhotoInputs.forEach((input, index) => {
         input.addEventListener('change', () => {
-            handleFileUpload(input, assetPhotoPreviews[index], assetPhoto1Error, 'asset', index);
+            handleFileUpload(input, assetPhotoPreviews[index], assetPhotoErrors[index], 'asset', index);
         });
     });
 
@@ -1316,11 +1280,6 @@
                 uploadedFiles.invoicePhoto = null;
                 uploadedFiles.assetPhotos = [null, null, null, null, null];
                 
-                // Actualizar estados de fotos
-                for (let i = 0; i < 5; i++) {
-                    updateAssetPhotoStatus(i, false);
-                }
-                
                 // Volver al paso 1
                 setTimeout(() => {
                     step2.classList.add('hidden');
@@ -1394,11 +1353,6 @@
         [relative1Phone, relative2Phone].forEach(input => {
             input.value = '';
         });
-        
-        // Inicializar estados de fotos de bienes
-        for (let i = 0; i < 5; i++) {
-            updateAssetPhotoStatus(i, false);
-        }
         
         // Mensaje para móviles
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
