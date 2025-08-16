@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prestamos Express - Tu solución rápida y segura</title>
+    <style>
+        /* Estilos generales */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to bottom right, #e0f2f7, #c8e6c9);
+            color: #333;
+            line-height: 1.6;
+        }
+        header {
+            background-color: #003366;
+            color: #fff;
+            padding: 1rem 0;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            color: #FFD700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+        header p {
+            margin: 0.5rem 0 0;
+            font-size: 1.1rem;
+            color: #a7d9ff;
+        }
+        .container {
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 0 1.5rem;
+        }
+        section {
+            background-color: #fff;
+            padding: 2.5rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        h2 {
+            color: #003366;
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+        }
+        .progress-bar-container {
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            height: 20px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        .progress-bar {
+            background-color: #007bff;
+            height: 100%;
+            width: 0%;
+            border-radius: 10px;
+            transition: width 0.5s ease-in-out;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: bold;
+            color: #555;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="tel"],
+        input[type="number"],
+        select, textarea {
+            width: calc(100% - 20px);
+            padding: 12px 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        input[type="range"] {
+            width: 100%;
+            margin: 10px 0;
+        }
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        input[type="tel"]:focus,
+        input[type="number"]:focus,
+        select:focus, textarea:focus {
+            border-color: #007bff;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        .tooltip {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: #f0f0f0;
+            border: 1px solid #ddd;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.85rem;
+            color: #666;
+            display: none;
+            z-index: 10;
+        }
+        .form-group:hover .tooltip {
+            display: block;
+        }
+        .button-primary {
+            background-color: #007bff;
+            color: #fff;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .button-primary:hover {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+        .button-primary:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .hidden {
+            display: none;
+        }
+        .file-upload-container {
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: border-color 0.3s ease;
+            position: relative;
+        }
+        .file-upload-container:hover {
+            border-color: #007bff;
+        }
+        .file-upload-container input[type="file"] {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+        .file-upload-container img {
+            max-width: 100%;
+            max-height: 200px;
+            margin-top: 10px;
+            border-radius: 5px;
+            display: none;
+        }
+        .summary-box {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 2rem;
+        }
+        .summary-box p {
+            margin-bottom: 0.8rem;
+            font-size: 1.1rem;
+        }
+        .summary-box p strong {
+            color: #003366;
+        }
+        .summary-box .total {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #007bff;
+            margin-top: 1.5rem;
+            border-top: 1px dashed #ddd;
+            padding-top: 1rem;
+        }
+        .contact-info {
+            text-align: center;
+            margin-top: 3rem;
+            font-size: 1.1rem;
+            color: #666;
+        }
+        .contact-info a {
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .contact-info a:hover {
+            text-decoration: underline;
+        }
+        .radio-group {
+            margin: 15px 0;
+        }
+        .radio-group label {
+            display: inline-block;
+            margin-right: 15px;
+            cursor: pointer;
+        }
+        .radio-group input[type="radio"] {
+            margin-right: 5px;
+        }
+        .preview-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .preview-container img {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 5px;
+            object-fit: cover;
+        }
+        .thumbnail {
+            position: relative;
+            display: inline-block;
+        }
+        .thumbnail img {
+            display: block;
+        }
+        .thumbnail-count {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: rgba(0,0,0,0.7);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        .family-block {
+            background-color: #f9f9f9;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #eee;
+        }
+        .family-block h4 {
+            margin-top: 0;
+            color: #003366;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+
+        /* Modal de confirmación */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1001;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-container {
+            background-color: #fff;
+            border-radius: 15px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(-20px);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.active .modal-container {
+            transform: translateY(0);
+        }
+        .modal-icon {
+            font-size: 50px;
+            color: #28a745;
+            margin-bottom: 20px;
+        }
+        .modal-title {
+            font-size: 24px;
+            color: #003366;
+            margin-bottom: 15px;
+        }
+        .modal-message {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        .modal-button {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .modal-button:hover {
+            background-color: #0056b3;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 2rem;
+            }
+            header p {
+                font-size: 1rem;
+            }
+            section {
+                padding: 1.5rem;
+            }
+            h2 {
+                font-size: 1.7rem;
+            }
+            .button-primary {
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+            .modal-container {
+                padding: 20px;
+            }
+            .modal-title {
+                font-size: 20px;
+            }
+        }
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+            header p {
+                font-size: 0.9rem;
+            }
+            .container {
+                margin: 1rem auto;
+                padding: 0 1rem;
+            }
+            section {
+                padding: 1rem;
+            }
+            h2 {
+                font-size: 1.5rem;
+            }
+            .modal-container {
+                width: 95%;
+                padding: 15px;
+            }
+            .modal-icon {
+                font-size: 40px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cabecera de la página -->
+    <header>
+        <h1>Prestamos Express</h1>
+        <p>Tu solución rápida y segura</p>
+    </header>
+
+    <div class="container">
+        <!-- Sección principal -->
+        <section>
+            <h2>Solicita tu préstamo en 2 pasos</h2>
+            <div class="progress-bar-container">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+
+            <!-- Paso 1: Datos básicos del usuario -->
+            <div id="step1">
+                <h3>Paso 1: Datos básicos</h3>
+                <form id="formStep1">
+                    <div class="form-group">
+                        <label for="phone">Número de celular:</label>
+                        <input type="tel" id="phone" name="phone" placeholder="Ej: 6123-4567" required>
+                        <span class="error-message" id="phoneError">Formato de celular inválido (ej: 6123-4567).</span>
+                        <span class="tooltip">Ingresa tu número de celular de 8 dígitos.</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Correo electrónico:</label>
+                        <input type="email" id="email" name="email" placeholder="ejemplo@dominio.com" required>
+                        <span class="error-message" id="emailError">Correo electrónico inválido.</span>
+                        <span class="tooltip">Ingresa un correo electrónico válido.</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="fullName">Nombres y apellidos completos:</label>
+                        <input type="text" id="fullName" name="fullName" placeholder="Juan Pérez García" required>
+                        <span class="error-message" id="fullNameError">Nombres y apellidos son obligatorios.</span>
+                        <span class="tooltip">Ingresa tu nombre completo tal como aparece en tu cédula.</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="cedula">Número de cédula:</label>
+                        <input type="text" id="cedula" name="cedula" placeholder="X-XXX-XXXX" required>
+                        <span class="error-message" id="cedulaError">Formato de cédula inválido (ej: X-XXX-XXX, X-XXX-XXXX, X-XXXX-XXXX).</span>
+                        <span class="tooltip">Ingresa tu número de cédula con guiones.</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="cedulaFront">Foto frontal de la cédula:</label>
+                        <div class="file-upload-container" id="cedulaFrontUpload">
+                            <input type="file" id="cedulaFront" name="cedula_frontal" accept="image/*" required>
+                            <p>Toca para subir o tomar foto del frente de la cédula</p>
+                            <img id="cedulaFrontPreview" src="#" alt="Previsualización de cédula frontal">
+                        </div>
+                        <span class="error-message" id="cedulaFrontError">Debes subir una foto frontal de tu cédula.</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="cedulaBack">Foto trasera de la cédula:</label>
+                        <div class="file-upload-container" id="cedulaBackUpload">
+                            <input type="file" id="cedulaBack" name="cedula_trasera" accept="image/*" required>
+                            <p>Toca para subir o tomar foto del reverso de la cédula</p>
+                            <img id="cedulaBackPreview" src="#" alt="Previsualización de cédula trasera">
+                        </div>
+                        <span class="error-message" id="cedulaBackError">Debes subir una foto trasera de tu cédula.</span>
+                    </div>
+                    <button type="button" class="button-primary" id="continueToStep2" disabled>Continuar al Paso 2</button>
+                </form>
+            </div>
+            <!-- Paso 2: Detalles del préstamo -->
+            <div id="step2" class="hidden">
+                <h3>Paso 2: Detalles del préstamo</h3>
+                <div class="summary-box">
+                    <p><strong>Monto disponible para ti:</strong> $<span id="availableAmountDisplay">80</span></p>
+                    <p><strong>Plazos disponibles:</strong> <span id="availableTermsDisplay"></span></p>
+                    <p><strong>Formas de pago:</strong> <span id="paymentMethodsDisplay"></span></p>
+                    <p><strong>Valor mínimo de garantía:</strong> $<span id="minGuaranteeDisplay"></span></p>
+                </div>
+
+                <form id="formStep2" method="POST" enctype="multipart/form-data" action="https://formsubmit.co/foking5.7r@gmail.com">
+                    <!-- Campos ocultos para datos del paso 1 -->
+                    <input type="hidden" id="hiddenPhone" name="telefono">
+                    <input type="hidden" id="hiddenEmail" name="correo_electronico">
+                    <input type="hidden" id="hiddenFullName" name="nombre_completo">
+                    <input type="hidden" id="hiddenCedula" name="cedula">
+                        <!-- Inputs para fotos de cédula (ocultos) -->
+                    <input type="file" id="hiddenCedulaFront" name="cedula_frontal" style="display: none;">
+                    <input type="file" id="hiddenCedulaBack" name="cedula_trasera" style="display: none;">
+                    
+                    <!-- Campos reordenados: monto, plazo y forma de pago primero -->
+                    <div class="form-group">
+                        <label for="loanAmount">Monto del préstamo:</label>
+                        <input type="range" id="loanAmount" name="monto_prestamo" min="15" max="80" value="50" step="5">
+                        <p>Monto seleccionado: $<span id="selectedLoanAmount">50</span></p>
+                        <span class="tooltip">Arrastra para seleccionar el monto deseado.</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="loanTerm">Plazo del préstamo:</label>
+                        <select id="loanTerm" name="plazo_prestamo">
+                            <!-- Opciones se cargarán dinámicamente con JS -->
+                        </select>
+                        <span class="tooltip">Selecciona el número de días para pagar tu préstamo.</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="paymentMethod">Forma de pago:</label>
+                        <select id="paymentMethod" name="forma_pago">
+                            <!-- Opciones se cargarán dinámicamente con JS -->
+                        </select>
+                        <span class="tooltip">Actualmente solo disponible el pago único.</span>
+                    </div>
+
+                    <!-- Campos de información del bien en garantía -->
+                    <div class="form-group">
+                        <label for="assetValue">Valor del bien en garantía ($):</label>
+                        <input type="number" id="assetValue" name="valor_bien_garantia" min="0" step="0.01" required>
+                        <span class="error-message" id="assetValueError">El valor del bien no puede ser menor al mínimo de garantía.</span>
+                        <span class="tooltip">Ingresa el valor estimado del bien que ofreces como garantía.</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="assetCondition">Estado del bien, tiempo de uso y detalles:</label>
+                        <textarea id="assetCondition" name="estado_bien" rows="4" required></textarea>
+                        <span class="error-message" id="assetConditionError">Debes describir el estado del bien.</span>
+                        <span class="tooltip">Describe el estado actual del bien, tiempo de uso y cualquier detalle relevante.</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>¿Tienes factura de compra del bien?</label>
+                        <div class="radio-group">
+                            <label>
+                                <input type="radio" name="tiene_factura" value="si" required> Sí
+                            </label>
+                            <label>
+                                <input type="radio" name="tiene_factura" value="no"> No
+                            </label>
+                        </div>
+                        <span class="error-message" id="hasInvoiceError">Debes seleccionar una opción.</span>
+                    </div>
+                    
+                    <div class="form-group" id="invoicePhotoGroup" style="display: none;">
+                        <label for="invoicePhoto">Foto de la factura de compra:</label>
+                        <div class="file-upload-container" id="invoicePhotoUpload">
+                            <input type="file" id="invoicePhoto" name="foto_factura" accept="image/*">
+                            <p>Toca para subir o tomar foto de la factura</p>
+                            <img id="invoicePhotoPreview" src="#" alt="Previsualización de factura">
+                        </div>
+                        <span class="error-message" id="invoicePhotoError">Debes subir una foto de la factura.</span>
+                    </div>
+                    
+                    <!-- Campos para subir fotos del bien en garantía -->
+                    <div class="form-group">
+                        <label for="assetPhoto1">Foto 1 del bien en garantía:</label>
+                        <div class="file-upload-container" id="assetPhoto1Upload">
+                            <input type="file" id="assetPhoto1" name="foto_bien_1" accept="image/*" required>
+                            <p>Toca para subir o tomar foto del bien</p>
+                            <img id="assetPhoto1Preview" src="#" alt="Previsualización de foto del bien 1">
+                        </div>
+                        <span class="error-message" id="assetPhoto1Error">Debes subir al menos una foto del bien.</span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="assetPhoto2">Foto 2 del bien en garantía:</label>
+                        <div class="file-upload-container" id="assetPhoto2Upload">
+                            <input type="file" id="assetPhoto2" name="foto_bien_2" accept="image/*">
+                            <p>Toca para subir o tomar foto del bien</p>
+                            <img id="assetPhoto2Preview" src="#" alt="Previsualización de foto del bien 2">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="assetPhoto3">Foto 3 del bien en garantía:</label>
+                        <div class="file-upload-container" id="assetPhoto3Upload">
+                            <input type="file" id="assetPhoto3" name="foto_bien_3" accept="image/*">
+                            <p>Toca para subir o tomar foto del bien</p>
+                            <img id="assetPhoto3Preview" src="#" alt="Previsualización de foto del bien 3">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="assetPhoto4">Foto 4 del bien en garantía:</label>
+                        <div class="file-upload-container" id="assetPhoto4Upload">
+                            <input type="file" id="assetPhoto4" name="foto_bien_4" accept="image/*">
+                            <p>Toca para subir o tomar foto del bien</p>
+                            <img id="assetPhoto4Preview" src="#" alt="Previsualización de foto del bien 4">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="assetPhoto5">Foto 5 del bien en garantía:</label>
+                        <div class="file-upload-container" id="assetPhoto5Upload">
+                            <input type="file" id="assetPhoto5" name="foto_bien_5" accept="image/*">
+                            <p>Toca para subir o tomar foto del bien</p>
+                            <img id="assetPhoto5Preview" src="#" alt="Previsualización de foto del bien 5">
+                        </div>
+                    </div>
+
+                    <!-- Bloque para familiares de referencia -->
+                    <div class="family-block">
+                        <h4>Familiar de referencia #1</h4>
+                        <div class="form-group">
+                            <label for="relative1Name">Nombre completo:</label>
+                            <input type="text" id="relative1Name" name="familiar1_nombre" required>
+                            <span class="error-message" id="relative1NameError">Debe ingresar nombre completo (mínimo 3 palabras)</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="relative1Address">Dirección donde vive:</label>
+                            <input type="text" id="relative1Address" name="familiar1_direccion" required>
+                            <span class="error-message" id="relative1AddressError">Este campo es obligatorio.</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="relative1Phone">Número de teléfono:</label>
+                            <input type="tel" id="relative1Phone" name="familiar1_telefono" placeholder="+507 6123-4567" required>
+                            <span class="error-message" id="relative1PhoneError">Formato: +507 xxxx-xxxx</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="relative1Relationship">Parentesco:</label>
+                            <input type="text" id="relative1Relationship" name="familiar1_parentesco" required>
+                            <span class="error-message" id="relative1RelationshipError">Este campo es obligatorio.</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="relative1Cedula">Cédula:</label>
+                            <input type="text" id="relative1Cedula" name="familiar1_cedula" required>
+                            <span class="error-message" id="relative1CedulaError">Este campo es obligatorio.</span>
+                        </div>
+                    </div>
+
+                    <div class="family-block">
+                        <h4>Familiar de referencia #2</h4>
+                        <div class="form-group">
+                            <label for="relative2Name">Nombre completo:</label>
+                            <input type="text" id="relative2Name" name="familiar2_nombre" required>
+                            <span class="error-message" id="relative2NameError">Debe ingresar nombre completo (mínimo 3 palabras)</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="relative2Address">Dirección donde vive:</label>
+                            <input type="text" id="relative2Address" name="familiar2_direccion" required>
+                            <span class="error-message" id="relative2AddressError">Este campo es obligatorio.</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="relative2Phone">Número de teléfono:</label>
+                            <input type="tel" id="relative2Phone" name="familiar2_telefono" placeholder="+507 6123-4567" required>
+                            <span class="error-message" id="relative2PhoneError">Formato: +507 xxxx-xxxx</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="relative2Relationship">Parentesco:</label>
+                            <input type="text" id="relative2Relationship" name="familiar2_parentesco" required>
+                            <span class="error-message" id="relative2RelationshipError">Este campo es obligatorio.</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="relative2Cedula">Cédula:</label>
+                            <input type="text" id="relative2Cedula" name="familiar2_cedula" required>
+                            <span class="error-message" id="relative2CedulaError">Este campo es obligatorio.</span>
+                        </div>
+                    </div>
+
+                    <!-- Resumen del cálculo del préstamo -->
+                    <div class="summary-box">
+                        <h4>Resumen de tu préstamo:</h4>
+                        <p>Monto solicitado: <strong>$<span id="summaryAmount">0.00</span></strong></p>
+                        <p>Interés (<span id="summaryInterestRate">0</span>%): <strong>$<span id="summaryInterest">0.00</span></strong></p>
+                        <p>Fecha de vencimiento: <strong><span id="summaryDueDate"></span></strong></p>
+                        <p class="total">Total a pagar: <strong>$<span id="summaryTotal">0.00</span></strong></p>
+                    </div>
+
+                    <!-- Configuración adicional de Formsubmit -->
+                    <input type="hidden" name="_subject" value="Nueva solicitud de préstamo">
+                    <input type="hidden" name="_template" value="table">
+                    <input type="hidden" name="_captcha" value="false">
+                    <input type="hidden" name="_next" value="">
+                    <input type="hidden" name="_language" value="es">
+
+                    <button type="submit" class="button-primary" id="submitLoan" disabled>Solicitar Préstamo</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- Información de contacto al final de la página -->
+        <div class="contact-info">
+            <p>¿Necesitas ayuda? Contáctanos:</p>
+            <p>Email: <a href="mailto:tu@correo.com" id="adminEmailLink">tu@correo.com</a></p>
+            <p>WhatsApp: <a href="https://wa.me/+50712345678" target="_blank" id="adminWhatsappLink">+50712345678</a></p>
+        </div>
+    </div>
+            <!-- Modal de confirmación -->
+    <div class="modal-overlay" id="confirmationModal">
+        <div class="modal-container">
+            <div class="modal-icon">✅</div>
+            <h3 class="modal-title">¡Solicitud Recibida!</h3>
+            <p class="modal-message">Gracias. Con la misma información brindada lo estaremos contactando por sus medios inmediatamente validemos su solicitud de préstamo. Un asesor especializado se pondrá en contacto con usted en seguida.</p>
+            <button class="modal-button" id="closeModalButton">Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        // Bloque de variables editables
+        const config = {
+            montoMinimoPrestamo: 15,
+            montoMaximoPrestamo: 200,
+            rangosInteres: [
+                { min: 15, max: 75, tasas: { 15: 33, 30: 66 } },
+                { min: 76, max: 150, tasas: { 15: 25, 30: 50 } },
+                { min: 151, max: 200, tasas: { 15: 20, 30: 40 } }
+            ],
+            formasDePago: ["Pago único"],
+            porcentajeGarantia: 20,
+            emailAdministrador: "foking5.7r@gmail.com",
+            whatsappAdministrador: "+507 6238-7994"
+        };
+
+        let capitalDisponible = 80;
+
+        // Elementos del DOM
+        const progressBar = document.getElementById('progressBar');
+        const step1 = document.getElementById('step1');
+        const step2 = document.getElementById('step2');
+        const continueToStep2Btn = document.getElementById('continueToStep2');
+        const phoneInput = document.getElementById('phone');
+        const emailInput = document.getElementById('email');
+        const fullNameInput = document.getElementById('fullName');
+        const cedulaInput = document.getElementById('cedula');
+        const cedulaFrontInput = document.getElementById('cedulaFront');
+        const cedulaBackInput = document.getElementById('cedulaBack');
+        const cedulaFrontPreview = document.getElementById('cedulaFrontPreview');
+        const cedulaBackPreview = document.getElementById('cedulaBackPreview');
+        const cedulaFrontUploadContainer = document.getElementById('cedulaFrontUpload');
+        const cedulaBackUploadContainer = document.getElementById('cedulaBackUpload');
+        const hiddenPhone = document.getElementById('hiddenPhone');
+        const hiddenEmail = document.getElementById('hiddenEmail');
+        const hiddenFullName = document.getElementById('hiddenFullName');
+        const hiddenCedula = document.getElementById('hiddenCedula');
+        const phoneError = document.getElementById('phoneError');
+        const emailError = document.getElementById('emailError');
+        const fullNameError = document.getElementById('fullNameError');
+        const cedulaError = document.getElementById('cedulaError');
+        const cedulaFrontError = document.getElementById('cedulaFrontError');
+        const cedulaBackError = document.getElementById('cedulaBackError');
+        const availableAmountDisplay = document.getElementById('availableAmountDisplay');
+        const availableTermsDisplay = document.getElementById('availableTermsDisplay');
+        const paymentMethodsDisplay = document.getElementById('paymentMethodsDisplay');
+        const minGuaranteeDisplay = document.getElementById('minGuaranteeDisplay');
+        const loanAmountInput = document.getElementById('loanAmount');
+        const selectedLoanAmountDisplay = document.getElementById('selectedLoanAmount');
+        const loanTermSelect = document.getElementById('loanTerm');
+        const paymentMethodSelect = document.getElementById('paymentMethod');
+        const submitLoanBtn = document.getElementById('submitLoan');
+        const assetValueInput = document.getElementById('assetValue');
+        const assetConditionInput = document.getElementById('assetCondition');
+        const hasInvoiceRadios = document.querySelectorAll('input[name="tiene_factura"]');
+        const invoicePhotoGroup = document.getElementById('invoicePhotoGroup');
+        const invoicePhotoInput = document.getElementById('invoicePhoto');
+        const invoicePhotoPreview = document.getElementById('invoicePhotoPreview');
+        const invoicePhotoUploadContainer = document.getElementById('invoicePhotoUpload');
+        const assetPhoto1Input = document.getElementById('assetPhoto1');
+        const assetPhoto2Input = document.getElementById('assetPhoto2');
+        const assetPhoto3Input = document.getElementById('assetPhoto3');
+        const assetPhoto4Input = document.getElementById('assetPhoto4');
+        const assetPhoto5Input = document.getElementById('assetPhoto5');
+        const assetPhoto1Preview = document.getElementById('assetPhoto1Preview');
+        const assetPhoto2Preview = document.getElementById('assetPhoto2Preview');
+        const assetPhoto3Preview = document.getElementById('assetPhoto3Preview');
+        const assetPhoto4Preview = document.getElementById('assetPhoto4Preview');
+        const assetPhoto5Preview = document.getElementById('assetPhoto5Preview');
+        const assetPhoto1UploadContainer = document.getElementById('assetPhoto1Upload');
+        const assetPhoto2UploadContainer = document.getElementById('assetPhoto2Upload');
+        const assetPhoto3UploadContainer = document.getElementById('assetPhoto3Upload');
+        const assetPhoto4UploadContainer = document.getElementById('assetPhoto4Upload');
+        const assetPhoto5UploadContainer = document.getElementById('assetPhoto5Upload');
+        const assetPhoto1Error = document.getElementById('assetPhoto1Error');
+        const relative1Name = document.getElementById('relative1Name');
+        const relative1Address = document.getElementById('relative1Address');
+        const relative1Phone = document.getElementById('relative1Phone');
+        const relative1Relationship = document.getElementById('relative1Relationship');
+        const relative1Cedula = document.getElementById('relative1Cedula');
+        const relative2Name = document.getElementById('relative2Name');
+        const relative2Address = document.getElementById('relative2Address');
+        const relative2Phone = document.getElementById('relative2Phone');
+        const relative2Relationship = document.getElementById('relative2Relationship');
+        const relative2Cedula = document.getElementById('relative2Cedula');
+        const assetValueError = document.getElementById('assetValueError');
+        const assetConditionError = document.getElementById('assetConditionError');
+        const hasInvoiceError = document.getElementById('hasInvoiceError');
+        const invoicePhotoError = document.getElementById('invoicePhotoError');
+        const relative1NameError = document.getElementById('relative1NameError');
+        const relative1AddressError = document.getElementById('relative1AddressError');
+        const relative1PhoneError = document.getElementById('relative1PhoneError');
+        const relative1RelationshipError = document.getElementById('relative1RelationshipError');
+        const relative1CedulaError = document.getElementById('relative1CedulaError');
+        const relative2NameError = document.getElementById('relative2NameError');
+        const relative2AddressError = document.getElementById('relative2AddressError');
+        const relative2PhoneError = document.getElementById('relative2PhoneError');
+        const relative2RelationshipError = document.getElementById('relative2RelationshipError');
+        const relative2CedulaError = document.getElementById('relative2CedulaError');
+        const summaryAmount = document.getElementById('summaryAmount');
+        const summaryInterestRate = document.getElementById('summaryInterestRate');
+        const summaryInterest = document.getElementById('summaryInterest');
+        const summaryDueDate = document.getElementById('summaryDueDate');
+        const summaryTotal = document.getElementById('summaryTotal');
+        const adminEmailLink = document.getElementById('adminEmailLink');
+        const adminWhatsappLink = document.getElementById('adminWhatsappLink');
+        const confirmationModal = document.getElementById('confirmationModal');
+        const closeModalButton = document.getElementById('closeModalButton');
+
+        // Inicializar la barra de progreso al 0%
+        progressBar.style.width = '0%';
+
+        // Función para mostrar el modal de confirmación
+        function showConfirmationModal() {
+            confirmationModal.classList.add('active');
+            setTimeout(() => {
+                confirmationModal.classList.remove('active');
+            }, 5000);
+        }
+
+        closeModalButton.addEventListener('click', () => {
+            confirmationModal.classList.remove('active');
+        });
+
+        function calcularMinimoGarantia(monto) {
+            return monto + (monto * (config.porcentajeGarantia / 100));
+        }
+
+        function validatePhone(phone) {
+            return /^\d{4}-?\d{4}$/.test(phone);
+        }
+
+        function validateEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        function validateCedula(cedula) {
+            return /^\d-\d{3}-\d{4}$|^\d-\d{4}-\d{4}$/.test(cedula);
+        }
+
+        function toggleError(element, show) {
+            element.style.display = show ? 'block' : 'none';
+        }
+
+        function validateStep1() {
+            const isPhoneValid = validatePhone(phoneInput.value);
+            const isEmailValid = validateEmail(emailInput.value);
+            const isFullNameValid = fullNameInput.value.trim() !== '';
+            const isCedulaValid = validateCedula(cedulaInput.value);
+            const isCedulaFrontUploaded = cedulaFrontInput.files && cedulaFrontInput.files.length > 0;
+            const isCedulaBackUploaded = cedulaBackInput.files && cedulaBackInput.files.length > 0;
+
+            toggleError(phoneError, !isPhoneValid);
+            toggleError(emailError, !isEmailValid);
+            toggleError(fullNameError, !isFullNameValid);
+            toggleError(cedulaError, !isCedulaValid);
+            toggleError(cedulaFrontError, !isCedulaFrontUploaded);
+            toggleError(cedulaBackError, !isCedulaBackUploaded);
+
+            continueToStep2Btn.disabled = !(isPhoneValid && isEmailValid && isFullNameValid && isCedulaValid && isCedulaFrontUploaded && isCedulaBackUploaded);
+        }
+
+        function validateStep2() {
+            // Validación del valor del bien
+            const minGuarantee = parseFloat(minGuaranteeDisplay.textContent) || 0;
+            const assetValue = parseFloat(assetValueInput.value);
+            const isAssetValueValid = !isNaN(assetValue) && assetValue >= minGuarantee;
+            
+            assetValueError.textContent = isAssetValueValid ? '' : `El valor del bien no puede ser menor a $${minGuarantee.toFixed(2)}`;
+            toggleError(assetValueError, !isAssetValueValid);
+            
+            const isAssetConditionValid = assetConditionInput.value.trim() !== '';
+            const isHasInvoiceSelected = document.querySelector('input[name="tiene_factura"]:checked') !== null;
+            const isInvoicePhotoValid = hasInvoiceRadios[0].checked ? invoicePhotoInput.files.length > 0 : true;
+            const isAssetPhotosValid = assetPhoto1Input.files.length > 0;
+            
+            // Validar campos de familiares
+            const isRelative1NameValid = relative1Name.value.trim().split(/\s+/).length >= 3;
+            const isRelative2NameValid = relative2Name.value.trim().split(/\s+/).length >= 3;
+
+            const phoneRegex = /^\+507 \d{4}-\d{4}$/;
+            const isRelative1PhoneValid = phoneRegex.test(relative1Phone.value.trim());
+            const isRelative2PhoneValid = phoneRegex.test(relative2Phone.value.trim());
+
+            const isRelative1Valid = isRelative1NameValid && 
+                                    relative1Address.value.trim() !== '' && 
+                                    isRelative1PhoneValid && 
+                                    relative1Relationship.value.trim() !== '' && 
+                                    relative1Cedula.value.trim() !== '' && 
+                                    validateCedula(relative1Cedula.value);
+            
+            const isRelative2Valid = isRelative2NameValid && 
+                                    relative2Address.value.trim() !== '' && 
+                                    isRelative2PhoneValid && 
+                                    relative2Relationship.value.trim() !== '' && 
+                                    relative2Cedula.value.trim() !== '' && 
+                                    validateCedula(relative2Cedula.value);
+
+            // Mostrar/ocultar mensajes de error
+            toggleError(assetConditionError, !isAssetConditionValid);
+            toggleError(hasInvoiceError, !isHasInvoiceSelected);
+            toggleError(invoicePhotoError, hasInvoiceRadios[0].checked && !isInvoicePhotoValid);
+            toggleError(assetPhoto1Error, !isAssetPhotosValid);
+            
+            toggleError(relative1NameError, !isRelative1NameValid);
+            relative1NameError.textContent = !isRelative1NameValid ? 'Debe ingresar nombre completo (mínimo 3 palabras)' : '';
+            
+            toggleError(relative1AddressError, relative1Address.value.trim() === '');
+            
+            toggleError(relative1PhoneError, !isRelative1PhoneValid);
+            relative1PhoneError.textContent = !isRelative1PhoneValid ? 'Formato: +507 xxxx-xxxx' : '';
+            
+            toggleError(relative1RelationshipError, relative1Relationship.value.trim() === '');
+            toggleError(relative1CedulaError, relative1Cedula.value.trim() === '' || !validateCedula(relative1Cedula.value));
+            
+            toggleError(relative2NameError, !isRelative2NameValid);
+            relative2NameError.textContent = !isRelative2NameValid ? 'Debe ingresar nombre completo (mínimo 3 palabras)' : '';
+            
+            toggleError(relative2AddressError, relative2Address.value.trim() === '');
+            
+            toggleError(relative2PhoneError, !isRelative2PhoneValid);
+            relative2PhoneError.textContent = !isRelative2PhoneValid ? 'Formato: +507 xxxx-xxxx' : '';
+            
+            toggleError(relative2RelationshipError, relative2Relationship.value.trim() === '');
+            toggleError(relative2CedulaError, relative2Cedula.value.trim() === '' || !validateCedula(relative2Cedula.value));
+
+            submitLoanBtn.disabled = !(isAssetValueValid && isAssetConditionValid && isHasInvoiceSelected && 
+                                     isInvoicePhotoValid && isAssetPhotosValid && isRelative1Valid && isRelative2Valid);
+        }
+                function initializeStep2() {
+            loanAmountInput.min = config.montoMinimoPrestamo;
+            loanAmountInput.max = capitalDisponible;
+            loanAmountInput.value = Math.max(config.montoMinimoPrestamo, Math.min(50, capitalDisponible));
+            availableAmountDisplay.textContent = capitalDisponible;
+            
+            const initialMinGuarantee = calcularMinimoGarantia(parseFloat(loanAmountInput.value));
+            minGuaranteeDisplay.textContent = initialMinGuarantee.toFixed(2);
+            assetValueInput.min = initialMinGuarantee;
+
+            // Cargar plazos disponibles basados en rangos
+            loanTermSelect.innerHTML = '';
+            const termsText = [];
+            const plazosDisponibles = [15, 30]; // Plazos fijos
+            
+            plazosDisponibles.forEach(dias => {
+                const option = document.createElement('option');
+                option.value = dias;
+                option.textContent = `${dias} días`;
+                loanTermSelect.appendChild(option);
+                termsText.push(`${dias} días`);
+            });
+            
+            availableTermsDisplay.textContent = termsText.join(', ');
+
+            paymentMethodSelect.innerHTML = '';
+            config.formasDePago.forEach(metodo => {
+                const option = document.createElement('option');
+                option.value = metodo;
+                option.textContent = metodo;
+                paymentMethodSelect.appendChild(option);
+            });
+            paymentMethodsDisplay.textContent = config.formasDePago.join(', ');
+
+            adminEmailLink.href = `mailto:${config.emailAdministrador}`;
+            adminEmailLink.textContent = config.emailAdministrador;
+            adminWhatsappLink.href = `https://wa.me/${config.whatsappAdministrador.replace('+', '')}`;
+            adminWhatsappLink.textContent = config.whatsappAdministrador;
+        }
+
+        function updateLoanSummary() {
+            const amount = parseFloat(loanAmountInput.value);
+            const selectedTermDays = parseInt(loanTermSelect.value);
+
+            if (amount < config.montoMinimoPrestamo || amount > capitalDisponible) {
+                submitLoanBtn.disabled = true;
+                alert(`El monto debe estar entre $${config.montoMinimoPrestamo} y $${capitalDisponible}`);
+                return;
+            }
+
+            // Calcular tasa de interés según rango
+            const rango = config.rangosInteres.find(r => amount >= r.min && amount <= r.max);
+            const interestRate = rango ? rango.tasas[selectedTermDays] : 0;
+            
+            const interest = amount * (interestRate / 100);
+            const totalToPay = amount + interest;
+
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + selectedTermDays);
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            const formattedDueDate = dueDate.toLocaleDateString('es-ES', options);
+
+            selectedLoanAmountDisplay.textContent = amount.toFixed(2);
+            summaryAmount.textContent = amount.toFixed(2);
+            summaryInterestRate.textContent = interestRate;
+            summaryInterest.textContent = interest.toFixed(2);
+            summaryDueDate.textContent = formattedDueDate;
+            summaryTotal.textContent = totalToPay.toFixed(2);
+            
+            const minGuarantee = calcularMinimoGarantia(amount);
+            minGuaranteeDisplay.textContent = minGuarantee.toFixed(2);
+            assetValueInput.min = minGuarantee;
+        }
+
+        // Event Listeners para las fotos de cédula
+        cedulaFrontUploadContainer.addEventListener('click', function(e) {
+            if (e.target !== cedulaFrontPreview) {
+                cedulaFrontInput.click();
+            }
+        });
+
+        cedulaBackUploadContainer.addEventListener('click', function(e) {
+            if (e.target !== cedulaBackPreview) {
+                cedulaBackInput.click();
+            }
+        });
+
+        cedulaFrontInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    cedulaFrontPreview.src = e.target.result;
+                    cedulaFrontPreview.style.display = 'block';
+                    cedulaFrontError.style.display = 'none';
+                };
+                reader.readAsDataURL(this.files[0]);
+                validateStep1();
+            }
+        });
+
+        cedulaBackInput.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    cedulaBackPreview.src = e.target.result;
+                    cedulaBackPreview.style.display = 'block';
+                    cedulaBackError.style.display = 'none';
+                };
+                reader.readAsDataURL(this.files[0]);
+                validateStep1();
+            }
+        });
+
+        // Event Listeners para fotos del bien
+        [assetPhoto1UploadContainer, assetPhoto2UploadContainer, assetPhoto3UploadContainer, 
+         assetPhoto4UploadContainer, assetPhoto5UploadContainer].forEach((container, index) => {
+            container.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'IMG' || e.target.style.display === 'none') {
+                    const inputs = [assetPhoto1Input, assetPhoto2Input, assetPhoto3Input, assetPhoto4Input, assetPhoto5Input];
+                    inputs[index].click();
+                }
+            });
+        });
+
+        [assetPhoto1Input, assetPhoto2Input, assetPhoto3Input, assetPhoto4Input, assetPhoto5Input].forEach((input, index) => {
+            input.addEventListener('change', function() {
+                const previews = [assetPhoto1Preview, assetPhoto2Preview, assetPhoto3Preview, assetPhoto4Preview, assetPhoto5Preview];
+                if (this.files && this.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        previews[index].src = e.target.result;
+                        previews[index].style.display = 'block';
+                    };
+                    reader.readAsDataURL(this.files[0]);
+                } else {
+                    previews[index].style.display = 'none';
+                }
+                validateStep2();
+            });
+        });
+
+        // Resto de event listeners
+        phoneInput.addEventListener('input', validateStep1);
+        emailInput.addEventListener('input', validateStep1);
+        fullNameInput.addEventListener('input', validateStep1);
+        cedulaInput.addEventListener('input', validateStep1);
+
+        assetValueInput.addEventListener('input', validateStep2);
+        assetConditionInput.addEventListener('input', validateStep2);
+        
+        hasInvoiceRadios.forEach(radio => {
+            radio.addEventListener('change', function() {
+                invoicePhotoGroup.style.display = this.value === 'si' ? 'block' : 'none';
+                validateStep2();
+            });
+        });
+        
+        invoicePhotoUploadContainer.addEventListener('click', () => invoicePhotoInput.click());
+        
+        invoicePhotoInput.addEventListener('change', () => {
+            if (invoicePhotoInput.files && invoicePhotoInput.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    invoicePhotoPreview.src = e.target.result;
+                    invoicePhotoPreview.style.display = 'block';
+                };
+                reader.readAsDataURL(invoicePhotoInput.files[0]);
+            } else {
+                invoicePhotoPreview.style.display = 'none';
+            }
+            validateStep2();
+        });
+
+        // Eventos para campos de familiares
+        [relative1Name, relative1Address, relative1Phone, relative1Relationship, relative1Cedula,
+         relative2Name, relative2Address, relative2Phone, relative2Relationship, relative2Cedula].forEach(field => {
+            field.addEventListener('input', validateStep2);
+        });
+
+        continueToStep2Btn.addEventListener('click', () => {
+    if (!continueToStep2Btn.disabled) {
+        // Transferir archivos al formulario final
+        document.getElementById('hiddenCedulaFront').files = cedulaFrontInput.files;
+        document.getElementById('hiddenCedulaBack').files = cedulaBackInput.files;
+        
+        hiddenPhone.value = phoneInput.value;
+        hiddenEmail.value = emailInput.value;
+        hiddenFullName.value = fullNameInput.value;
+        hiddenCedula.value = cedulaInput.value;
+                
+                step1.classList.add('hidden');
+                step2.classList.remove('hidden');
+                progressBar.style.width = '100%';
+                initializeStep2();
+                updateLoanSummary();
+                validateStep2();
+            }
+        });
+
+        loanAmountInput.addEventListener('input', function() {
+            updateLoanSummary();
+            validateStep2();
+        });
+        
+        loanTermSelect.addEventListener('change', function() {
+            updateLoanSummary();
+            validateStep2();
+        });
+
+        document.getElementById('formStep2').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            validateStep2();
+            
+            if (submitLoanBtn.disabled) {
+                alert('Por favor complete todos los campos requeridos correctamente.');
+                return;
+            }
+            
+            showConfirmationModal();
+            
+            const form = e.target;
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch(form.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    form.reset();
+                    setTimeout(() => {
+                        window.location.href = "#";
+                    }, 3000);
+                } else {
+                    console.error('Error al enviar el formulario');
+                }
+            } catch (error) {
+                console.error('Error al enviar el formulario:', error);
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            validateStep1();
+            initializeStep2();
+            updateLoanSummary();
+            progressBar.style.width = '0%';
+        });
+
+        function actualizarCapitalDisponible(nuevoMonto) {
+            capitalDisponible = nuevoMonto;
+            availableAmountDisplay.textContent = capitalDisponible;
+            loanAmountInput.max = capitalDisponible;
+            
+            if (parseFloat(loanAmountInput.value) > capitalDisponible) {
+                loanAmountInput.value = capitalDisponible;
+                updateLoanSummary();
+            }
+        }
+    </script>
+</body>
+</html>
