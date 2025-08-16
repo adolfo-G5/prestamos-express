@@ -507,6 +507,16 @@
             color: #007bff;
             font-weight: bold;
         }
+        
+        .network-warning {
+            background: #fff9db;
+            border-left: 4px solid #ffd43b;
+            padding: 10px 15px;
+            margin: 15px 0;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -530,6 +540,11 @@
             <h2>Solicita tu préstamo en 2 pasos</h2>
             <div class="progress-bar-container">
                 <div class="progress-bar" id="progressBar"></div>
+            </div>
+            
+            <div class="network-warning" id="networkWarning">
+                <i>⚠️</i>
+                <div>Consejo: Para un mejor rendimiento en dispositivos móviles, asegúrate de tener una buena conexión a Internet al enviar tu solicitud.</div>
             </div>
 
             <!-- Paso 1: Datos básicos del usuario -->
@@ -826,11 +841,13 @@
         ],
         formasDePago: ["Pago único"],
         porcentajeGarantia: 20,
-        emailAdministrador: "foking5.7r@gmail.com",
-        whatsappAdministrador: "+50766126208"
+        emailAdministrador: "chasercash6@gmail.com",
+        whatsappAdministrador: "+50766126208",
+        maxImageSizeMobile: 1024 // Tamaño máximo de imagen en móvil (px)
     };
 
     let capitalDisponible = 80;
+    let isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
     // Elementos del DOM
     const progressBar = document.getElementById('progressBar');
@@ -916,9 +933,15 @@
     const acceptTermsBtn = document.getElementById('acceptTerms');
     const termsContent = document.getElementById('termsContent');
     const sendingIndicator = document.getElementById('sendingIndicator');
+    const networkWarning = document.getElementById('networkWarning');
 
     // Inicializar la barra de progreso
     progressBar.style.width = '0%';
+
+    // Mostrar advertencia de red en móviles
+    if (isMobileDevice) {
+        networkWarning.style.display = 'flex';
+    }
 
     // Función para mostrar el modal de confirmación
     function showConfirmationModal() {
@@ -1211,6 +1234,51 @@
         validateStep2();
     });
     
+    // Función para comprimir imágenes en dispositivos móviles
+    async function compressImageForMobile(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    
+                    // Calcular nuevas dimensiones manteniendo la relación de aspecto
+                    const maxSize = config.maxImageSizeMobile;
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    if (width > height && width > maxSize) {
+                        height *= maxSize / width;
+                        width = maxSize;
+                    } else if (height > maxSize) {
+                        width *= maxSize / height;
+                        height = maxSize;
+                    }
+                    
+                    canvas.width = width;
+                    canvas.height = height;
+                    
+                    // Dibujar la imagen redimensionada
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Convertir a formato JPEG con calidad reducida
+                    canvas.toBlob(function(blob) {
+                        const compressedFile = new File([blob], file.name, {
+                            type: 'image/jpeg',
+                            lastModified: Date.now()
+                        });
+                        resolve(compressedFile);
+                    }, 'image/jpeg', 0.7);
+                };
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+    
     document.getElementById('formStep2').addEventListener('submit', async (e) => {
         e.preventDefault();
         validateStep2();
@@ -1239,20 +1307,25 @@
             
             // Agregar fotos de la cédula (paso 1)
             if (cedulaFrontInput.files.length > 0) {
-                const file = cedulaFrontInput.files[0];
+                let file = cedulaFrontInput.files[0];
+                // Comprimir solo en móviles si la imagen es grande
+                if (isMobileDevice && file.size > 1000000) { // >1MB
+                    file = await compressImageForMobile(file);
+                }
                 const newName = generateUniqueFileName(file.name, 'cedula_frontal');
-                const renamedFile = new File([file], newName, { type: file.type });
-                formData.append('cedula_frontal', renamedFile);
+                formData.append('cedula_frontal', file, newName);
             }
             
             if (cedulaBackInput.files.length > 0) {
-                const file = cedulaBackInput.files[0];
+                let file = cedulaBackInput.files[0];
+                if (isMobileDevice && file.size > 1000000) {
+                    file = await compressImageForMobile(file);
+                }
                 const newName = generateUniqueFileName(file.name, 'cedula_trasera');
-                const renamedFile = new File([file], newName, { type: file.type });
-                formData.append('cedula_trasera', renamedFile);
+                formData.append('cedula_trasera', file, newName);
             }
             
-            // Agregar fotos de bienes y factura con nombres únicos
+            // Agregar fotos de bienes y factura
             const photoInputs = [
                 { input: invoicePhotoInput, name: 'foto_factura' },
                 { input: assetPhoto1Input, name: 'foto_bien_1' },
@@ -1262,27 +1335,37 @@
                 { input: assetPhoto5Input, name: 'foto_bien_5' }
             ];
             
-            photoInputs.forEach(item => {
+            for (const item of photoInputs) {
                 if (item.input.files.length > 0) {
-                    const file = item.input.files[0];
+                    let file = item.input.files[0];
+                    // Comprimir solo en móviles si la imagen es grande
+                    if (isMobileDevice && file.size > 1000000) {
+                        file = await compressImageForMobile(file);
+                    }
                     const newName = generateUniqueFileName(file.name, item.name);
-                    const renamedFile = new File([file], newName, { type: file.type });
-                    formData.append(item.name, renamedFile);
+                    formData.append(item.name, file, newName);
                 }
-            });
+            }
             
             // Agregar datos calculados al FormData
             formData.append('total_a_pagar', document.getElementById('summaryTotal').textContent);
             formData.append('fecha_pago', document.getElementById('summaryDueDate').textContent);
             formData.append('intereses', document.getElementById('summaryInterest').textContent);
             
+            // Enviar con timeout más largo para móviles
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), isMobileDevice ? 60000 : 30000);
+            
             const response = await fetch(form.action, {
                 method: 'POST',
                 body: formData,
+                signal: controller.signal,
                 headers: {
                     'Accept': 'application/json'
                 }
             });
+            
+            clearTimeout(timeoutId);
             
             if (response.ok) {
                 // Mostrar modal de confirmación
@@ -1308,11 +1391,29 @@
                 }, 3000);
             } else {
                 console.error('Error al enviar el formulario');
-                alert('Hubo un error al enviar tu solicitud. Por favor intenta nuevamente.');
+                let errorMsg = 'Hubo un error al enviar tu solicitud. Por favor intenta nuevamente.';
+                
+                // Mensaje más específico para móviles
+                if (isMobileDevice) {
+                    errorMsg += ' Si el problema persiste, intenta con una conexión WiFi.';
+                }
+                
+                alert(errorMsg);
             }
         } catch (error) {
             console.error('Error al enviar el formulario:', error);
-            alert('Hubo un error al enviar tu solicitud. Por favor intenta nuevamente.');
+            let errorMsg = 'Hubo un error al enviar tu solicitud. Por favor intenta nuevamente.';
+            
+            if (error.name === 'AbortError') {
+                errorMsg = 'La solicitud tardó demasiado en enviarse. Por favor verifica tu conexión a Internet e intenta nuevamente.';
+            }
+            
+            // Mensaje más específico para móviles
+            if (isMobileDevice) {
+                errorMsg += ' Si el problema persiste, intenta con una conexión WiFi.';
+            }
+            
+            alert(errorMsg);
         } finally {
             // Ocultar indicador de envío y restaurar botón
             sendingIndicator.style.display = 'none';
