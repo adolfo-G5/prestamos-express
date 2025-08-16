@@ -539,7 +539,7 @@
                     <i>📱</i>
                     <div>En dispositivos móviles: Si tienes problemas para subir fotos, intenta tomarlas directamente con la cámara.</div>
                 </div>
-                <form id="formStep1" enctype="multipart/form-data">
+                <form id="formStep1">
                     <div class="form-group">
                         <label for="phone">Número de celular:</label>
                         <div class="phone-container">
@@ -830,14 +830,6 @@
         whatsappAdministrador: "+50762387994"
     };
 
-    // Almacén para mantener las fotos subidas
-    const uploadedFiles = {
-        cedulaFront: null,
-        cedulaBack: null,
-        invoicePhoto: null,
-        assetPhotos: [null, null, null, null, null] // 5 espacios para fotos de bienes
-    };
-
     let capitalDisponible = 80;
 
     // Elementos del DOM
@@ -951,7 +943,6 @@
     }
 
     function validateFullName(name) {
-        // Validar que tenga al menos 4 palabras (primer nombre, segundo nombre, primer apellido, segundo apellido)
         return name.trim().split(/\s+/).length >= 4;
     }
 
@@ -964,8 +955,8 @@
         const isEmailValid = validateEmail(emailInput.value);
         const isFullNameValid = validateFullName(fullNameInput.value);
         const isCedulaValid = validateCedula(cedulaInput.value);
-        const isCedulaFrontUploaded = uploadedFiles.cedulaFront !== null;
-        const isCedulaBackUploaded = uploadedFiles.cedulaBack !== null;
+        const isCedulaFrontUploaded = cedulaFrontInput.files.length > 0;
+        const isCedulaBackUploaded = cedulaBackInput.files.length > 0;
 
         toggleError(phoneError, !isPhoneValid);
         toggleError(emailError, !isEmailValid);
@@ -984,10 +975,14 @@
         const isAssetValueValid = !isNaN(assetValue) && assetValue >= minGuarantee;
         const isAssetConditionValid = assetConditionInput.value.trim() !== '';
         const isHasInvoiceSelected = document.querySelector('input[name="tiene_factura"]:checked') !== null;
-        const isInvoicePhotoValid = hasInvoiceRadios[0].checked ? uploadedFiles.invoicePhoto !== null : true;
+        const isInvoicePhotoValid = hasInvoiceRadios[0].checked ? invoicePhotoInput.files.length > 0 : true;
         
         // Validar que todas las fotos de bien estén subidas
-        const isAssetPhotosValid = uploadedFiles.assetPhotos.every(photo => photo !== null);
+        const isAssetPhoto1Valid = assetPhoto1Input.files.length > 0;
+        const isAssetPhoto2Valid = assetPhoto2Input.files.length > 0;
+        const isAssetPhoto3Valid = assetPhoto3Input.files.length > 0;
+        const isAssetPhoto4Valid = assetPhoto4Input.files.length > 0;
+        const isAssetPhoto5Valid = assetPhoto5Input.files.length > 0;
 
         // Validar campos de familiares
         const isRelative1NameValid = validateFullName(relative1Name.value);
@@ -997,16 +992,18 @@
         toggleError(assetConditionError, !isAssetConditionValid);
         toggleError(hasInvoiceError, !isHasInvoiceSelected);
         toggleError(invoicePhotoError, hasInvoiceRadios[0].checked && !isInvoicePhotoValid);
-        toggleError(assetPhoto1Error, !uploadedFiles.assetPhotos[0]);
-        toggleError(assetPhoto2Error, !uploadedFiles.assetPhotos[1]);
-        toggleError(assetPhoto3Error, !uploadedFiles.assetPhotos[2]);
-        toggleError(assetPhoto4Error, !uploadedFiles.assetPhotos[3]);
-        toggleError(assetPhoto5Error, !uploadedFiles.assetPhotos[4]);
+        toggleError(assetPhoto1Error, !isAssetPhoto1Valid);
+        toggleError(assetPhoto2Error, !isAssetPhoto2Valid);
+        toggleError(assetPhoto3Error, !isAssetPhoto3Valid);
+        toggleError(assetPhoto4Error, !isAssetPhoto4Valid);
+        toggleError(assetPhoto5Error, !isAssetPhoto5Valid);
         toggleError(relative1NameError, !isRelative1NameValid);
         toggleError(relative2NameError, !isRelative2NameValid);
 
         submitLoanBtn.disabled = !(isAssetValueValid && isAssetConditionValid && isHasInvoiceSelected && 
-                                 isInvoicePhotoValid && isAssetPhotosValid && isRelative1NameValid && isRelative2NameValid);
+                                 isInvoicePhotoValid && isAssetPhoto1Valid && isAssetPhoto2Valid && 
+                                 isAssetPhoto3Valid && isAssetPhoto4Valid && isAssetPhoto5Valid && 
+                                 isRelative1NameValid && isRelative2NameValid);
     }
 
     function calcularMinimoGarantia(monto) {
@@ -1090,10 +1087,9 @@
         assetValueInput.min = minGuarantee;
     }
 
-    // SOLUCIÓN PARA MÚLTIPLES FOTOS: Manejar subida de archivos
-    function handleFileUpload(input, preview, errorElement, fileType, index = null) {
+    // Manejar subida de archivos
+    function handleFileUpload(input, preview, errorElement) {
         if (input.files && input.files[0]) {
-            const file = input.files[0];
             const reader = new FileReader();
             reader.onload = function(e) {
                 preview.src = e.target.result;
@@ -1103,48 +1099,20 @@
                     errorElement.style.display = 'none';
                 }
                 
-                // Almacenar el archivo según el tipo
-                if (fileType === 'cedulaFront') {
-                    uploadedFiles.cedulaFront = file;
-                } else if (fileType === 'cedulaBack') {
-                    uploadedFiles.cedulaBack = file;
-                } else if (fileType === 'invoice') {
-                    uploadedFiles.invoicePhoto = file;
-                } else if (fileType === 'asset' && index !== null) {
-                    uploadedFiles.assetPhotos[index] = file;
-                }
-                
                 // Validar paso correspondiente
-                if (fileType === 'cedulaFront' || fileType === 'cedulaBack') {
+                if (input === cedulaFrontInput || input === cedulaBackInput) {
                     validateStep1();
                 } else {
                     validateStep2();
                 }
-                
-                // Workaround para iOS: forzar actualización del input
-                const temp = input.value;
-                input.value = '';
-                input.value = temp;
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(input.files[0]);
         } else {
-            // Caso en que el usuario borra el archivo
             preview.src = '#';
             preview.style.display = 'none';
             
-            // Eliminar del almacenamiento
-            if (fileType === 'cedulaFront') {
-                uploadedFiles.cedulaFront = null;
-            } else if (fileType === 'cedulaBack') {
-                uploadedFiles.cedulaBack = null;
-            } else if (fileType === 'invoice') {
-                uploadedFiles.invoicePhoto = null;
-            } else if (fileType === 'asset' && index !== null) {
-                uploadedFiles.assetPhotos[index] = null;
-            }
-            
             // Validar el paso correspondiente
-            if (fileType === 'cedulaFront' || fileType === 'cedulaBack') {
+            if (input === cedulaFrontInput || input === cedulaBackInput) {
                 validateStep1();
             } else {
                 validateStep2();
@@ -1154,27 +1122,33 @@
 
     // Configurar eventos para inputs de archivo
     cedulaFrontInput.addEventListener('change', () => {
-        handleFileUpload(cedulaFrontInput, cedulaFrontPreview, cedulaFrontError, 'cedulaFront');
+        handleFileUpload(cedulaFrontInput, cedulaFrontPreview, cedulaFrontError);
     });
 
     cedulaBackInput.addEventListener('change', () => {
-        handleFileUpload(cedulaBackInput, cedulaBackPreview, cedulaBackError, 'cedulaBack');
+        handleFileUpload(cedulaBackInput, cedulaBackPreview, cedulaBackError);
     });
 
     // Event Listeners para fotos del bien
-    const assetPhotoInputs = [assetPhoto1Input, assetPhoto2Input, assetPhoto3Input, assetPhoto4Input, assetPhoto5Input];
-    const assetPhotoPreviews = [assetPhoto1Preview, assetPhoto2Preview, assetPhoto3Preview, assetPhoto4Preview, assetPhoto5Preview];
-    const assetPhotoErrors = [assetPhoto1Error, assetPhoto2Error, assetPhoto3Error, assetPhoto4Error, assetPhoto5Error];
-    
-    assetPhotoInputs.forEach((input, index) => {
-        input.addEventListener('change', () => {
-            handleFileUpload(input, assetPhotoPreviews[index], assetPhotoErrors[index], 'asset', index);
-        });
+    assetPhoto1Input.addEventListener('change', () => {
+        handleFileUpload(assetPhoto1Input, assetPhoto1Preview, assetPhoto1Error);
+    });
+    assetPhoto2Input.addEventListener('change', () => {
+        handleFileUpload(assetPhoto2Input, assetPhoto2Preview, assetPhoto2Error);
+    });
+    assetPhoto3Input.addEventListener('change', () => {
+        handleFileUpload(assetPhoto3Input, assetPhoto3Preview, assetPhoto3Error);
+    });
+    assetPhoto4Input.addEventListener('change', () => {
+        handleFileUpload(assetPhoto4Input, assetPhoto4Preview, assetPhoto4Error);
+    });
+    assetPhoto5Input.addEventListener('change', () => {
+        handleFileUpload(assetPhoto5Input, assetPhoto5Preview, assetPhoto5Error);
     });
 
     // Event Listeners para fotos de factura
     invoicePhotoInput.addEventListener('change', () => {
-        handleFileUpload(invoicePhotoInput, invoicePhotoPreview, invoicePhotoError, 'invoice');
+        handleFileUpload(invoicePhotoInput, invoicePhotoPreview, invoicePhotoError);
     });
 
     // Resto de event listeners
@@ -1255,16 +1229,6 @@
             const form = e.target;
             const formData = new FormData(form);
             
-            // Agregar archivos almacenados al FormData
-            if (uploadedFiles.cedulaFront) formData.append('cedula_frontal', uploadedFiles.cedulaFront);
-            if (uploadedFiles.cedulaBack) formData.append('cedula_trasera', uploadedFiles.cedulaBack);
-            if (uploadedFiles.invoicePhoto) formData.append('foto_factura', uploadedFiles.invoicePhoto);
-            
-            // Agregar fotos de bienes
-            uploadedFiles.assetPhotos.forEach((file, index) => {
-                if (file) formData.append(`foto_bien_${index+1}`, file);
-            });
-            
             // Agregar datos calculados al FormData
             formData.append('total_a_pagar', document.getElementById('summaryTotal').textContent);
             formData.append('fecha_pago', document.getElementById('summaryDueDate').textContent);
@@ -1294,12 +1258,6 @@
                     preview.style.display = 'none';
                 });
                 
-                // Resetear almacenamiento de archivos
-                uploadedFiles.cedulaFront = null;
-                uploadedFiles.cedulaBack = null;
-                uploadedFiles.invoicePhoto = null;
-                uploadedFiles.assetPhotos = [null, null, null, null, null];
-                
                 // Volver al paso 1
                 setTimeout(() => {
                     step2.classList.add('hidden');
@@ -1321,7 +1279,7 @@
         }
     });
 
-    // Función para cargar términos y condiciones (editable)
+    // Función para cargar términos y condiciones
     function loadTermsContent() {
         termsContent.innerHTML = `
             <h4>Condiciones Generales</h4>
@@ -1378,11 +1336,6 @@
         [relative1Phone, relative2Phone].forEach(input => {
             input.value = '';
         });
-        
-        // Mensaje para móviles
-        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-            console.log("Modo móvil activado - Solución iOS implementada");
-        }
     });
 </script>
 </body>
