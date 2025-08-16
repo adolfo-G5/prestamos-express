@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Préstamos Express - Solución Móvil</title>
+    <title>Préstamos Express - Solución Final</title>
     <style>
         * {
             margin: 0;
@@ -826,11 +826,11 @@
         ],
         formasDePago: ["Pago único"],
         porcentajeGarantia: 20,
-        emailAdministrador: "foking5.7r@gmail.com",
-        whatsappAdministrador: "+50762387994"
+        emailAdministrador: "chasercash6@gmail.com",
+        whatsappAdministrador: "+50766126208"
     };
 
-    let capitalDisponible = 100;
+    let capitalDisponible = 80;
 
     // Elementos del DOM
     const progressBar = document.getElementById('progressBar');
@@ -1228,6 +1228,48 @@
         try {
             const form = e.target;
             const formData = new FormData(form);
+            
+            // Función para generar un nombre de archivo único
+            function generateUniqueFileName(originalName, prefix) {
+                const timestamp = Date.now();
+                const randomString = Math.random().toString(36).substring(2, 8);
+                const extension = originalName.split('.').pop();
+                return `${prefix}_${timestamp}_${randomString}.${extension}`;
+            }
+            
+            // Agregar fotos de la cédula (paso 1)
+            if (cedulaFrontInput.files.length > 0) {
+                const file = cedulaFrontInput.files[0];
+                const newName = generateUniqueFileName(file.name, 'cedula_frontal');
+                const renamedFile = new File([file], newName, { type: file.type });
+                formData.append('cedula_frontal', renamedFile);
+            }
+            
+            if (cedulaBackInput.files.length > 0) {
+                const file = cedulaBackInput.files[0];
+                const newName = generateUniqueFileName(file.name, 'cedula_trasera');
+                const renamedFile = new File([file], newName, { type: file.type });
+                formData.append('cedula_trasera', renamedFile);
+            }
+            
+            // Agregar fotos de bienes y factura con nombres únicos
+            const photoInputs = [
+                { input: invoicePhotoInput, name: 'foto_factura' },
+                { input: assetPhoto1Input, name: 'foto_bien_1' },
+                { input: assetPhoto2Input, name: 'foto_bien_2' },
+                { input: assetPhoto3Input, name: 'foto_bien_3' },
+                { input: assetPhoto4Input, name: 'foto_bien_4' },
+                { input: assetPhoto5Input, name: 'foto_bien_5' }
+            ];
+            
+            photoInputs.forEach(item => {
+                if (item.input.files.length > 0) {
+                    const file = item.input.files[0];
+                    const newName = generateUniqueFileName(file.name, item.name);
+                    const renamedFile = new File([file], newName, { type: file.type });
+                    formData.append(item.name, renamedFile);
+                }
+            });
             
             // Agregar datos calculados al FormData
             formData.append('total_a_pagar', document.getElementById('summaryTotal').textContent);
