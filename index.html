@@ -476,6 +476,33 @@
             margin-top: 4px;
             font-style: italic;
         }
+        
+        .upload-status {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .upload-status .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-uploaded {
+            background-color: #28a745;
+        }
+        
+        .status-required {
+            background-color: #dc3545;
+        }
+        
+        .status-optional {
+            background-color: #6c757d;
+        }
     </style>
 </head>
 <body>
@@ -638,6 +665,10 @@
                             <img id="assetPhoto1Preview" src="#" alt="Previsualización de foto del bien 1">
                         </div>
                         <span class="error-message" id="assetPhoto1Error">Debes subir al menos una foto del bien.</span>
+                        <div class="upload-status">
+                            <span class="status-indicator status-required" id="assetPhoto1Status"></span>
+                            <span id="assetPhoto1StatusText">Foto requerida</span>
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -646,6 +677,10 @@
                             <input type="file" id="assetPhoto2" name="foto_bien_2" accept="image/*" capture="environment">
                             <p>Haz clic para subir o tomar foto del bien</p>
                             <img id="assetPhoto2Preview" src="#" alt="Previsualización de foto del bien 2">
+                        </div>
+                        <div class="upload-status">
+                            <span class="status-indicator status-optional" id="assetPhoto2Status"></span>
+                            <span id="assetPhoto2StatusText">Opcional</span>
                         </div>
                     </div>
                     
@@ -656,6 +691,10 @@
                             <p>Haz clic para subir o tomar foto del bien</p>
                             <img id="assetPhoto3Preview" src="#" alt="Previsualización de foto del bien 3">
                         </div>
+                        <div class="upload-status">
+                            <span class="status-indicator status-optional" id="assetPhoto3Status"></span>
+                            <span id="assetPhoto3StatusText">Opcional</span>
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -665,6 +704,10 @@
                             <p>Haz clic para subir o tomar foto del bien</p>
                             <img id="assetPhoto4Preview" src="#" alt="Previsualización de foto del bien 4">
                         </div>
+                        <div class="upload-status">
+                            <span class="status-indicator status-optional" id="assetPhoto4Status"></span>
+                            <span id="assetPhoto4StatusText">Opcional</span>
+                        </div>
                     </div>
                     
                     <div class="form-group">
@@ -673,6 +716,10 @@
                             <input type="file" id="assetPhoto5" name="foto_bien_5" accept="image/*" capture="environment">
                             <p>Haz clic para subir o tomar foto del bien</p>
                             <img id="assetPhoto5Preview" src="#" alt="Previsualización de foto del bien 5">
+                        </div>
+                        <div class="upload-status">
+                            <span class="status-indicator status-optional" id="assetPhoto5Status"></span>
+                            <span id="assetPhoto5StatusText">Opcional</span>
                         </div>
                     </div>
 
@@ -795,7 +842,7 @@
         cedulaFront: null,
         cedulaBack: null,
         invoicePhoto: null,
-        assetPhotos: []
+        assetPhotos: [null, null, null, null, null] // 5 espacios para fotos de bienes
     };
 
     let capitalDisponible = 80;
@@ -851,6 +898,16 @@
     const assetPhoto4Preview = document.getElementById('assetPhoto4Preview');
     const assetPhoto5Preview = document.getElementById('assetPhoto5Preview');
     const assetPhoto1Error = document.getElementById('assetPhoto1Error');
+    const assetPhoto1Status = document.getElementById('assetPhoto1Status');
+    const assetPhoto1StatusText = document.getElementById('assetPhoto1StatusText');
+    const assetPhoto2Status = document.getElementById('assetPhoto2Status');
+    const assetPhoto2StatusText = document.getElementById('assetPhoto2StatusText');
+    const assetPhoto3Status = document.getElementById('assetPhoto3Status');
+    const assetPhoto3StatusText = document.getElementById('assetPhoto3StatusText');
+    const assetPhoto4Status = document.getElementById('assetPhoto4Status');
+    const assetPhoto4StatusText = document.getElementById('assetPhoto4StatusText');
+    const assetPhoto5Status = document.getElementById('assetPhoto5Status');
+    const assetPhoto5StatusText = document.getElementById('assetPhoto5StatusText');
     const relative1Name = document.getElementById('relative1Name');
     const relative1Address = document.getElementById('relative1Address');
     const relative1Phone = document.getElementById('relative1Phone');
@@ -885,9 +942,6 @@
     // Función para mostrar el modal de confirmación
     function showConfirmationModal() {
         confirmationModal.classList.add('active');
-        setTimeout(() => {
-            confirmationModal.classList.remove('active');
-        }, 5000);
     }
 
     closeModalButton.addEventListener('click', () => {
@@ -942,7 +996,9 @@
         const isAssetConditionValid = assetConditionInput.value.trim() !== '';
         const isHasInvoiceSelected = document.querySelector('input[name="tiene_factura"]:checked') !== null;
         const isInvoicePhotoValid = hasInvoiceRadios[0].checked ? uploadedFiles.invoicePhoto !== null : true;
-        const isAssetPhotosValid = uploadedFiles.assetPhotos.length > 0;
+        
+        // Validar que al menos una foto de bien esté subida
+        const isAssetPhotosValid = uploadedFiles.assetPhotos.some(photo => photo !== null);
 
         // Validar campos de familiares
         const isRelative1NameValid = validateFullName(relative1Name.value);
@@ -1061,6 +1117,7 @@
                     uploadedFiles.invoicePhoto = file;
                 } else if (fileType === 'asset' && index !== null) {
                     uploadedFiles.assetPhotos[index] = file;
+                    updateAssetPhotoStatus(index, true);
                 }
                 
                 // Validar paso correspondiente
@@ -1069,13 +1126,52 @@
                 } else {
                     validateStep2();
                 }
-                
-                // Workaround para iOS: forzar actualización del input
-                const temp = input.value;
-                input.value = '';
-                input.value = temp;
             };
             reader.readAsDataURL(file);
+        } else {
+            // Caso en que el usuario borra el archivo
+            preview.src = '#';
+            preview.style.display = 'none';
+            
+            // Eliminar del almacenamiento
+            if (fileType === 'cedulaFront') {
+                uploadedFiles.cedulaFront = null;
+            } else if (fileType === 'cedulaBack') {
+                uploadedFiles.cedulaBack = null;
+            } else if (fileType === 'invoice') {
+                uploadedFiles.invoicePhoto = null;
+            } else if (fileType === 'asset' && index !== null) {
+                uploadedFiles.assetPhotos[index] = null;
+                updateAssetPhotoStatus(index, false);
+            }
+            
+            // Validar el paso correspondiente
+            if (fileType === 'cedulaFront' || fileType === 'cedulaBack') {
+                validateStep1();
+            } else {
+                validateStep2();
+            }
+        }
+    }
+
+    // Actualizar estado visual de la foto
+    function updateAssetPhotoStatus(index, isUploaded) {
+        const statusIndicator = document.getElementById(`assetPhoto${index+1}Status`);
+        const statusText = document.getElementById(`assetPhoto${index+1}StatusText`);
+        
+        if (statusIndicator && statusText) {
+            if (isUploaded) {
+                statusIndicator.className = 'status-indicator status-uploaded';
+                statusText.textContent = 'Foto subida correctamente';
+            } else {
+                if (index === 0) {
+                    statusIndicator.className = 'status-indicator status-required';
+                    statusText.textContent = 'Foto requerida';
+                } else {
+                    statusIndicator.className = 'status-indicator status-optional';
+                    statusText.textContent = 'Opcional';
+                }
+            }
         }
     }
 
@@ -1218,7 +1314,12 @@
                 uploadedFiles.cedulaFront = null;
                 uploadedFiles.cedulaBack = null;
                 uploadedFiles.invoicePhoto = null;
-                uploadedFiles.assetPhotos = [];
+                uploadedFiles.assetPhotos = [null, null, null, null, null];
+                
+                // Actualizar estados de fotos
+                for (let i = 0; i < 5; i++) {
+                    updateAssetPhotoStatus(i, false);
+                }
                 
                 // Volver al paso 1
                 setTimeout(() => {
@@ -1293,6 +1394,11 @@
         [relative1Phone, relative2Phone].forEach(input => {
             input.value = '';
         });
+        
+        // Inicializar estados de fotos de bienes
+        for (let i = 0; i < 5; i++) {
+            updateAssetPhotoStatus(i, false);
+        }
         
         // Mensaje para móviles
         if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
