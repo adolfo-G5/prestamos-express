@@ -372,6 +372,44 @@
             background-color: #0056b3;
         }
         
+        /* Nuevos estilos para términos y condiciones */
+        #terms {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        #termsContent {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 15px;
+            border: 1px solid #eee;
+            border-radius: 10px;
+            background: #f9f9f9;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        #termsContent h4 {
+            color: #003366;
+            margin: 15px 0 10px;
+        }
+        
+        #termsContent p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        
+        #termsContent ul {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+        
+        #termsContent li {
+            margin-bottom: 8px;
+        }
+        
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
@@ -406,6 +444,10 @@
             .summary-box {
                 padding: 15px;
             }
+            
+            #termsContent {
+                max-height: 300px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -421,6 +463,11 @@
                 flex-direction: column;
                 gap: 8px;
             }
+            
+            #termsContent {
+                padding: 10px;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -431,7 +478,17 @@
     </header>
 
     <div class="container">
-        <section>
+        <!-- Sección de Términos y Condiciones -->
+        <div id="terms">
+            <h2>Términos y Condiciones</h2>
+            <div id="termsContent">
+                <!-- Contenido editable desde el script -->
+                <!-- El contenido real se cargará dinámicamente -->
+            </div>
+            <button type="button" class="button-primary" id="acceptTerms">Acepto los términos y condiciones</button>
+        </div>
+
+        <section id="formSection" class="hidden">
             <h2>Solicita tu préstamo en 2 pasos</h2>
             <div class="progress-bar-container">
                 <div class="progress-bar" id="progressBar"></div>
@@ -723,10 +780,20 @@
         whatsappAdministrador: "+50762387994"
     };
 
+    // Almacén para mantener las fotos subidas
+    const uploadedFiles = {
+        cedulaFront: null,
+        cedulaBack: null,
+        invoicePhoto: null,
+        assetPhotos: []
+    };
+
     let capitalDisponible = 80;
 
     // Elementos del DOM
     const progressBar = document.getElementById('progressBar');
+    const termsSection = document.getElementById('terms');
+    const formSection = document.getElementById('formSection');
     const step1 = document.getElementById('step1');
     const step2 = document.getElementById('step2');
     const continueToStep2Btn = document.getElementById('continueToStep2');
@@ -798,6 +865,8 @@
     const adminWhatsappLink = document.getElementById('adminWhatsappLink');
     const confirmationModal = document.getElementById('confirmationModal');
     const closeModalButton = document.getElementById('closeModalButton');
+    const acceptTermsBtn = document.getElementById('acceptTerms');
+    const termsContent = document.getElementById('termsContent');
 
     // Inicializar la barra de progreso
     progressBar.style.width = '0%';
@@ -836,8 +905,8 @@
         const isEmailValid = validateEmail(emailInput.value);
         const isFullNameValid = fullNameInput.value.trim() !== '';
         const isCedulaValid = validateCedula(cedulaInput.value);
-        const isCedulaFrontUploaded = cedulaFrontInput.files && cedulaFrontInput.files.length > 0;
-        const isCedulaBackUploaded = cedulaBackInput.files && cedulaBackInput.files.length > 0;
+        const isCedulaFrontUploaded = uploadedFiles.cedulaFront !== null;
+        const isCedulaBackUploaded = uploadedFiles.cedulaBack !== null;
 
         toggleError(phoneError, !isPhoneValid);
         toggleError(emailError, !isEmailValid);
@@ -856,8 +925,8 @@
         const isAssetValueValid = !isNaN(assetValue) && assetValue >= minGuarantee;
         const isAssetConditionValid = assetConditionInput.value.trim() !== '';
         const isHasInvoiceSelected = document.querySelector('input[name="tiene_factura"]:checked') !== null;
-        const isInvoicePhotoValid = hasInvoiceRadios[0].checked ? invoicePhotoInput.files.length > 0 : true;
-        const isAssetPhotosValid = assetPhoto1Input.files.length > 0;
+        const isInvoicePhotoValid = hasInvoiceRadios[0].checked ? uploadedFiles.invoicePhoto !== null : true;
+        const isAssetPhotosValid = uploadedFiles.assetPhotos.length > 0;
 
         // Validar campos de familiares
         const isRelative1NameValid = relative1Name.value.trim().split(/\s+/).length >= 3;
@@ -954,15 +1023,35 @@
         assetValueInput.min = minGuarantee;
     }
 
-    // SOLUCIÓN PARA MÓVILES: Manejar subida de archivos
-    function handleFileUpload(input, preview, errorElement) {
+    // SOLUCIÓN PARA MÚLTIPLES FOTOS: Manejar subida de archivos
+    function handleFileUpload(input, preview, errorElement, fileType, index = null) {
         if (input.files && input.files[0]) {
+            const file = input.files[0];
             const reader = new FileReader();
             reader.onload = function(e) {
                 preview.src = e.target.result;
                 preview.style.display = 'block';
+                
                 if (errorElement) {
                     errorElement.style.display = 'none';
+                }
+                
+                // Almacenar el archivo según el tipo
+                if (fileType === 'cedulaFront') {
+                    uploadedFiles.cedulaFront = file;
+                } else if (fileType === 'cedulaBack') {
+                    uploadedFiles.cedulaBack = file;
+                } else if (fileType === 'invoice') {
+                    uploadedFiles.invoicePhoto = file;
+                } else if (fileType === 'asset' && index !== null) {
+                    uploadedFiles.assetPhotos[index] = file;
+                }
+                
+                // Validar paso correspondiente
+                if (fileType === 'cedulaFront' || fileType === 'cedulaBack') {
+                    validateStep1();
+                } else {
+                    validateStep2();
                 }
                 
                 // Workaround para iOS: forzar actualización del input
@@ -970,47 +1059,32 @@
                 input.value = '';
                 input.value = temp;
             };
-            reader.readAsDataURL(input.files[0]);
-            validateStep1();
+            reader.readAsDataURL(file);
         }
     }
 
     // Configurar eventos para inputs de archivo
     cedulaFrontInput.addEventListener('change', () => {
-        handleFileUpload(cedulaFrontInput, cedulaFrontPreview, cedulaFrontError);
+        handleFileUpload(cedulaFrontInput, cedulaFrontPreview, cedulaFrontError, 'cedulaFront');
     });
 
     cedulaBackInput.addEventListener('change', () => {
-        handleFileUpload(cedulaBackInput, cedulaBackPreview, cedulaBackError);
+        handleFileUpload(cedulaBackInput, cedulaBackPreview, cedulaBackError, 'cedulaBack');
     });
 
     // Event Listeners para fotos del bien
-    [assetPhoto1Input, assetPhoto2Input, assetPhoto3Input, assetPhoto4Input, assetPhoto5Input].forEach((input, index) => {
-        input.addEventListener('change', function() {
-            const previews = [assetPhoto1Preview, assetPhoto2Preview, assetPhoto3Preview, assetPhoto4Preview, assetPhoto5Preview];
-            handleFileUpload(input, previews[index], assetPhoto1Error);
-            validateStep2();
+    const assetPhotoInputs = [assetPhoto1Input, assetPhoto2Input, assetPhoto3Input, assetPhoto4Input, assetPhoto5Input];
+    const assetPhotoPreviews = [assetPhoto1Preview, assetPhoto2Preview, assetPhoto3Preview, assetPhoto4Preview, assetPhoto5Preview];
+    
+    assetPhotoInputs.forEach((input, index) => {
+        input.addEventListener('change', () => {
+            handleFileUpload(input, assetPhotoPreviews[index], assetPhoto1Error, 'asset', index);
         });
     });
 
     // Event Listeners para fotos de factura
     invoicePhotoInput.addEventListener('change', () => {
-        if (invoicePhotoInput.files && invoicePhotoInput.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                invoicePhotoPreview.src = e.target.result;
-                invoicePhotoPreview.style.display = 'block';
-                
-                // Workaround para iOS
-                const temp = invoicePhotoInput.value;
-                invoicePhotoInput.value = '';
-                invoicePhotoInput.value = temp;
-            };
-            reader.readAsDataURL(invoicePhotoInput.files[0]);
-        } else {
-            invoicePhotoPreview.style.display = 'none';
-        }
-        validateStep2();
+        handleFileUpload(invoicePhotoInput, invoicePhotoPreview, invoicePhotoError, 'invoice');
     });
 
     // Resto de event listeners
@@ -1088,6 +1162,16 @@
             const form = e.target;
             const formData = new FormData(form);
             
+            // Agregar archivos almacenados al FormData
+            if (uploadedFiles.cedulaFront) formData.append('cedula_frontal', uploadedFiles.cedulaFront);
+            if (uploadedFiles.cedulaBack) formData.append('cedula_trasera', uploadedFiles.cedulaBack);
+            if (uploadedFiles.invoicePhoto) formData.append('foto_factura', uploadedFiles.invoicePhoto);
+            
+            // Agregar fotos de bienes
+            uploadedFiles.assetPhotos.forEach((file, index) => {
+                if (file) formData.append(`foto_bien_${index+1}`, file);
+            });
+            
             // Agregar datos calculados al FormData
             formData.append('total_a_pagar', document.getElementById('summaryTotal').textContent);
             formData.append('fecha_pago', document.getElementById('summaryDueDate').textContent);
@@ -1114,6 +1198,12 @@
                     preview.style.display = 'none';
                 });
                 
+                // Resetear almacenamiento de archivos
+                uploadedFiles.cedulaFront = null;
+                uploadedFiles.cedulaBack = null;
+                uploadedFiles.invoicePhoto = null;
+                uploadedFiles.assetPhotos = [];
+                
                 // Volver al paso 1
                 setTimeout(() => {
                     step2.classList.add('hidden');
@@ -1130,8 +1220,54 @@
         }
     });
 
+    // Función para cargar términos y condiciones (editable)
+    function loadTermsContent() {
+        termsContent.innerHTML = `
+            <h4>Condiciones Generales</h4>
+            <p>Al aceptar estos términos y condiciones, usted reconoce haber leído y comprendido las siguientes condiciones que rigen el uso de nuestro servicio de préstamos express.</p>
+            
+            <h4>Responsabilidades del Usuario</h4>
+            <p>Usted se compromete a:</p>
+            <ul>
+                <li>Proporcionar información veraz y actualizada en el formulario de solicitud</li>
+                <li>Mantener la confidencialidad de su información de acceso</li>
+                <li>Utilizar el servicio únicamente para fines legales</li>
+                <li>Pagar el préstamo en los plazos y condiciones establecidos</li>
+            </ul>
+            
+            <h4>Derechos de la Plataforma</h4>
+            <p>Nos reservamos el derecho de:</p>
+            <ul>
+                <li>Rechazar solicitudes que no cumplan con nuestros criterios de aprobación</li>
+                <li>Suspender o cancelar cuentas que violen nuestros términos</li>
+                <li>Modificar las condiciones de los préstamos con previo aviso</li>
+                <li>Verificar la información proporcionada por el usuario</li>
+            </ul>
+            
+            <h4>Privacidad y Protección de Datos</h4>
+            <p>Toda la información personal proporcionada será tratada conforme a nuestra Política de Privacidad, disponible en nuestro sitio web. Nos comprometemos a proteger sus datos y a utilizarlos únicamente para los fines establecidos.</p>
+            
+            <h4>Tarifas e Intereses</h4>
+            <p>Los intereses y tarifas aplicables a cada préstamo se detallarán en el contrato específico que se le presentará antes de la aprobación final. Asegúrese de comprender todas las condiciones antes de aceptar el préstamo.</p>
+            
+            <h4>Plazos de Pago</h4>
+            <p>Los plazos de pago se establecerán según el monto del préstamo y las condiciones acordadas. El incumplimiento en los pagos generará intereses moratorios según lo establecido en el contrato.</p>
+            
+            <h4>Modificaciones</h4>
+            <p>Estos términos y condiciones pueden ser modificados periódicamente. Se le notificará sobre cambios significativos mediante los canales de contacto proporcionados.</p>
+        `;
+    }
+
+    // Evento para aceptar términos
+    acceptTermsBtn.addEventListener('click', () => {
+        termsSection.classList.add('hidden');
+        formSection.classList.remove('hidden');
+        progressBar.style.width = '0%';
+    });
+
     // Inicialización
     document.addEventListener('DOMContentLoaded', () => {
+        loadTermsContent();
         validateStep1();
         initializeStep2();
         updateLoanSummary();
