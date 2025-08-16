@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Préstamos Express - Solución iOS</title>
+    <title>Préstamos Express - Solución Móvil</title>
     <style>
         /* Estilos generales */
         body {
@@ -384,12 +384,24 @@
             h3 {
                 font-size: 1.2rem;
             }
+            .file-upload-container {
+                padding: 15px;
+            }
+            .file-upload-container p {
+                font-size: 0.9rem;
+            }
             .modal-container {
                 width: 95%;
                 padding: 15px;
             }
             .modal-icon {
                 font-size: 40px;
+            }
+            .modal-title {
+                font-size: 1.3rem;
+            }
+            .modal-message {
+                font-size: 0.9rem;
             }
         }
     </style>
@@ -828,25 +840,22 @@
     }
 
     function validateStep1() {
-        // SOLUCIÓN iOS: Usar timeout para permitir que Safari procese los archivos
-        setTimeout(() => {
-            const isPhoneValid = validatePhone(phoneInput.value);
-            const isEmailValid = validateEmail(emailInput.value);
-            const isFullNameValid = fullNameInput.value.trim() !== '';
-            const isCedulaValid = validateCedula(cedulaInput.value);
-            const isCedulaFrontUploaded = cedulaFrontInput.files && cedulaFrontInput.files.length > 0;
-            const isCedulaBackUploaded = cedulaBackInput.files && cedulaBackInput.files.length > 0;
+        const isPhoneValid = validatePhone(phoneInput.value);
+        const isEmailValid = validateEmail(emailInput.value);
+        const isFullNameValid = fullNameInput.value.trim() !== '';
+        const isCedulaValid = validateCedula(cedulaInput.value);
+        const isCedulaFrontUploaded = cedulaFrontInput.files && cedulaFrontInput.files.length > 0;
+        const isCedulaBackUploaded = cedulaBackInput.files && cedulaBackInput.files.length > 0;
 
-            toggleError(phoneError, !isPhoneValid);
-            toggleError(emailError, !isEmailValid);
-            toggleError(fullNameError, !isFullNameValid);
-            toggleError(cedulaError, !isCedulaValid);
-            toggleError(cedulaFrontError, !isCedulaFrontUploaded);
-            toggleError(cedulaBackError, !isCedulaBackUploaded);
+        toggleError(phoneError, !isPhoneValid);
+        toggleError(emailError, !isEmailValid);
+        toggleError(fullNameError, !isFullNameValid);
+        toggleError(cedulaError, !isCedulaValid);
+        toggleError(cedulaFrontError, !isCedulaFrontUploaded);
+        toggleError(cedulaBackError, !isCedulaBackUploaded);
 
-            continueToStep2Btn.disabled = !(isPhoneValid && isEmailValid && isFullNameValid && 
-                                         isCedulaValid && isCedulaFrontUploaded && isCedulaBackUploaded);
-        }, 300);
+        continueToStep2Btn.disabled = !(isPhoneValid && isEmailValid && isFullNameValid && 
+                                     isCedulaValid && isCedulaFrontUploaded && isCedulaBackUploaded);
     }
 
     function validateStep2() {
@@ -1008,52 +1017,34 @@
         }
     });
 
-    // SOLUCIÓN iOS: Workaround para inputs de archivo
-    cedulaFrontInput.addEventListener('change', function() {
-        if (this.files && this.files[0]) {
+    // Función para manejar la subida de archivos en iOS
+    function handleFileUpload(input, preview, errorElement) {
+        if (input.files && input.files[0]) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                cedulaFrontPreview.src = e.target.result;
-                cedulaFrontPreview.style.display = 'block';
-                cedulaFrontError.style.display = 'none';
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                if (errorElement) {
+                    errorElement.style.display = 'none';
+                }
                 
-                // Forzar cambio en el input para iOS
-                const temp = cedulaFrontInput.value;
-                cedulaFrontInput.value = '';
-                cedulaFrontInput.value = temp;
+                // Workaround para iOS: forzar actualización del input
+                const temp = input.value;
+                input.value = '';
+                input.value = temp;
             };
-            reader.readAsDataURL(this.files[0]);
+            reader.readAsDataURL(input.files[0]);
             validateStep1();
         }
+    }
+
+    // Configurar eventos para inputs de archivo
+    cedulaFrontInput.addEventListener('change', () => {
+        handleFileUpload(cedulaFrontInput, cedulaFrontPreview, cedulaFrontError);
     });
 
-    cedulaBackInput.addEventListener('change', function() {
-        if (this.files && this.files[0]) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                cedulaBackPreview.src = e.target.result;
-                cedulaBackPreview.style.display = 'block';
-                cedulaBackError.style.display = 'none';
-                
-                // Forzar cambio en el input para iOS
-                const temp = cedulaBackInput.value;
-                cedulaBackInput.value = '';
-                cedulaBackInput.value = temp;
-            };
-            reader.readAsDataURL(this.files[0]);
-            validateStep1();
-        }
-    });
-
-    // Eventos input para iOS
-    cedulaFrontInput.addEventListener('input', function() {
-        validateStep1();
-        setTimeout(validateStep1, 500);
-    });
-
-    cedulaBackInput.addEventListener('input', function() {
-        validateStep1();
-        setTimeout(validateStep1, 500);
+    cedulaBackInput.addEventListener('change', () => {
+        handleFileUpload(cedulaBackInput, cedulaBackPreview, cedulaBackError);
     });
 
     // Event Listeners para fotos del bien
@@ -1073,56 +1064,31 @@
     [assetPhoto1Input, assetPhoto2Input, assetPhoto3Input, assetPhoto4Input, assetPhoto5Input].forEach((input, index) => {
         input.addEventListener('change', function() {
             const previews = [assetPhoto1Preview, assetPhoto2Preview, assetPhoto3Preview, assetPhoto4Preview, assetPhoto5Preview];
-            if (this.files && this.files[0]) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    previews[index].src = e.target.result;
-                    previews[index].style.display = 'block';
-                    
-                    // Forzar cambio en el input para iOS
-                    const temp = input.value;
-                    input.value = '';
-                    input.value = temp;
-                };
-                reader.readAsDataURL(this.files[0]);
-            } else {
-                previews[index].style.display = 'none';
-            }
+            handleFileUpload(input, previews[index], assetPhoto1Error);
             validateStep2();
-        });
-        
-        // Evento input para iOS
-        input.addEventListener('input', function() {
-            validateStep2();
-            setTimeout(validateStep2, 500);
         });
     });
 
     // Event Listeners para fotos de factura
     document.getElementById('invoicePhotoUpload').addEventListener('click', () => invoicePhotoInput.click());
     
-    invoicePhotoInput.addEventListener('change', function() {
-        if (this.files && this.files[0]) {
+    invoicePhotoInput.addEventListener('change', () => {
+        if (invoicePhotoInput.files && invoicePhotoInput.files[0]) {
             const reader = new FileReader();
             reader.onload = function(e) {
                 invoicePhotoPreview.src = e.target.result;
                 invoicePhotoPreview.style.display = 'block';
                 
-                // Forzar cambio en el input para iOS
+                // Workaround para iOS
                 const temp = invoicePhotoInput.value;
                 invoicePhotoInput.value = '';
                 invoicePhotoInput.value = temp;
             };
-            reader.readAsDataURL(this.files[0]);
+            reader.readAsDataURL(invoicePhotoInput.files[0]);
         } else {
             invoicePhotoPreview.style.display = 'none';
         }
         validateStep2();
-    });
-    
-    invoicePhotoInput.addEventListener('input', function() {
-        validateStep2();
-        setTimeout(validateStep2, 500);
     });
 
     // Resto de event listeners
@@ -1275,6 +1241,11 @@
         [relative1Phone, relative2Phone].forEach(input => {
             input.value = '';
         });
+        
+        // Mensaje inicial para móviles
+        if (/iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
+            console.log("Modo móvil activado - Solución iOS implementada");
+        }
     });
 
     function actualizarCapitalDisponible(nuevoMonto) {
